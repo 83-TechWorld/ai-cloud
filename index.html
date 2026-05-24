@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud AI Master Guide — AWS · Azure · GCP</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0c10;--surface:#13141a;--surface2:#1c1e27;--border:#252733;--text:#e8eaf0;--muted:#6b7080;--aws:#ff9900;--aws-dim:rgba(255,153,0,0.12);--azure:#0078d4;--azure-dim:rgba(0,120,212,0.12);--gcp:#34a853;--gcp-dim:rgba(52,168,83,0.12);--accent:#c084fc;--mono:'IBM Plex Mono',monospace;--sans:'Archivo',sans-serif;--display:'Archivo Black',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.7}
+.shell{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;scrollbar-width:thin}
+.sb-brand{padding:22px 18px 14px;border-bottom:1px solid var(--border)}
+.sb-brand .logo{font-family:var(--display);font-size:15px;line-height:1.2}
+.sb-brand .logo .aws{color:var(--aws)}.sb-brand .logo .az{color:var(--azure)}.sb-brand .logo .gcp{color:var(--gcp)}
+.sb-brand p{font-size:10px;color:var(--muted);margin-top:4px;font-family:var(--mono)}
+.nav-group{padding:10px 0 2px}
+.nav-group-label{padding:4px 18px 5px;font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.nav-link{display:flex;align-items:center;gap:8px;padding:6px 18px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s;text-decoration:none;border-left:2px solid transparent}
+.nav-link:hover{color:var(--text);background:rgba(255,255,255,.03)}
+.nav-link.active{color:var(--text);border-left-color:var(--accent);background:rgba(192,132,252,.06)}
+.nav-link .ndot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.main{overflow-y:auto}
+.hero{padding:48px 48px 40px;background:linear-gradient(135deg,#0d0e14 0%,#131520 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 600px 300px at 80% 50%,rgba(192,132,252,.04),transparent)}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+.hero h1{font-family:var(--display);font-size:clamp(26px,4vw,44px);line-height:1.05}
+.hero h1 .aws{color:var(--aws)}.hero h1 .az{color:var(--azure)}.hero h1 .gcp{color:var(--gcp)}
+.hero-sub{margin-top:10px;color:var(--muted);max-width:540px;font-size:13.5px}
+.hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.hbadge{padding:3px 11px;border-radius:20px;font-size:11px;font-family:var(--mono);border:1px solid var(--border);color:var(--muted)}
+.section{border-bottom:1px solid var(--border);scroll-margin-top:20px}
+.section-head{padding:32px 48px 0;display:flex;gap:16px;align-items:flex-start}
+.sec-num{font-family:var(--display);font-size:48px;line-height:1;opacity:.06;flex-shrink:0;margin-top:-4px}
+.sec-info{flex:1}
+.sec-tag{display:inline-block;padding:3px 9px;border-radius:4px;font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;border:1px solid}
+.sec-info h2{font-family:var(--display);font-size:22px;line-height:1.2}
+.sec-info .sec-sub{font-size:12px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
+.section-body{padding:20px 48px 36px}
+.cloud-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:14px 0}
+.cloud-card{border-radius:10px;padding:18px;border:1px solid var(--border);background:var(--surface)}
+.cloud-card.aws{border-color:rgba(255,153,0,.2);background:linear-gradient(135deg,rgba(255,153,0,.04),transparent)}
+.cloud-card.azure{border-color:rgba(0,120,212,.2);background:linear-gradient(135deg,rgba(0,120,212,.04),transparent)}
+.cloud-card.gcp{border-color:rgba(52,168,83,.2);background:linear-gradient(135deg,rgba(52,168,83,.04),transparent)}
+.cc-header{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.cc-logo{font-family:var(--display);font-size:12px}
+.cc-logo.aws{color:var(--aws)}.cc-logo.azure{color:var(--azure)}.cc-logo.gcp{color:var(--gcp)}
+.cc-body h4{font-size:11px;font-weight:600;color:var(--muted);font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;margin-top:10px}
+.cc-body h4:first-child{margin-top:0}
+.cc-body ul{list-style:none;padding:0}
+.cc-body ul li{font-size:12px;padding:2px 0;color:#c0c4d0;display:flex;gap:6px}
+.cc-body ul li::before{content:'›';color:var(--muted);flex-shrink:0;font-family:var(--mono)}
+.code-wrap{margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.code-label{background:#0d0e14;padding:7px 14px;font-family:var(--mono);font-size:10px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.code-label .lang{background:var(--surface2);padding:1px 6px;border-radius:3px;font-size:9px;letter-spacing:1px}
+.code-label.aws-bar{border-left:3px solid var(--aws)}.code-label.azure-bar{border-left:3px solid var(--azure)}.code-label.gcp-bar{border-left:3px solid var(--gcp)}
+pre{background:#080910;padding:14px 16px;overflow-x:auto;margin:0}
+code{font-family:var(--mono);font-size:12px;line-height:1.8;color:#abb2bf}
+.kw{color:#c678dd}.fn{color:#61afef}.st{color:#98c379}.cm{color:#5c6370;font-style:italic}.num{color:#d19a66}.cls{color:#e5c07b}
+.flow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:12px 0}
+.flow-box{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;font-weight:500;text-align:center;min-width:85px}
+.flow-box span{display:block;font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:1px;letter-spacing:1px}
+.flow-arr{color:var(--muted);font-size:16px;padding:0 2px}
+.tbl-wrap{overflow-x:auto;margin:12px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:var(--surface2);padding:9px 13px;font-family:var(--mono);font-size:10px;text-align:left;color:var(--muted);letter-spacing:.5px;border-bottom:1px solid var(--border)}
+td{padding:9px 13px;border-bottom:1px solid var(--border);color:#c0c4d0;vertical-align:top}
+tr:last-child td{border-bottom:none}tr:hover td{background:rgba(255,255,255,.015)}
+td code{background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:11px}
+.callout{border-radius:8px;padding:11px 14px;margin:10px 0;font-size:13px;display:flex;gap:9px}
+.callout.tip{background:rgba(52,168,83,.08);border-left:3px solid var(--gcp)}
+.callout.warn{background:rgba(255,153,0,.08);border-left:3px solid var(--aws)}
+.callout.info{background:rgba(0,120,212,.08);border-left:3px solid var(--azure)}
+.callout.key{background:rgba(192,132,252,.08);border-left:3px solid var(--accent)}
+.callout-icon{font-size:14px;flex-shrink:0}.callout p{line-height:1.6;color:#c0c4d0}.callout strong{color:var(--text)}
+.mini-t{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:20px 0 9px;display:flex;align-items:center;gap:9px}
+.mini-t::after{content:'';flex:1;height:1px;background:var(--border)}
+.tabs{margin:12px 0}.tab-btns{display:flex;border-bottom:1px solid var(--border);gap:0}
+.tab-btn{padding:7px 16px;font-size:11px;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:var(--mono);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;letter-spacing:.5px}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active.aws{color:var(--aws);border-bottom-color:var(--aws)}
+.tab-btn.active.azure{color:#60b0ff;border-bottom-color:var(--azure)}
+.tab-btn.active.gcp{color:var(--gcp);border-bottom-color:var(--gcp)}
+.tab-panel{display:none;padding:14px 0}.tab-panel.active{display:block}
+.cmp{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0}
+.cmp-col{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cmp-head{padding:11px 14px;font-family:var(--display);font-size:13px;display:flex;align-items:center;gap:7px}
+.cmp-head.aws{background:var(--aws-dim);color:var(--aws);border-bottom:1px solid rgba(255,153,0,.2)}
+.cmp-head.azure{background:var(--azure-dim);color:#60b0ff;border-bottom:1px solid rgba(0,120,212,.2)}
+.cmp-head.gcp{background:var(--gcp-dim);color:var(--gcp);border-bottom:1px solid rgba(52,168,83,.2)}
+.cmp-body{padding:12px 14px}
+.cmp-body ul{list-style:none;padding:0}
+.cmp-body ul li{font-size:12px;padding:3px 0;color:#c0c4d0;border-bottom:1px solid rgba(255,255,255,.04)}
+.cmp-body ul li:last-child{border-bottom:none}
+.cmp-body ul li strong{color:var(--text);display:block;font-size:11px;margin-top:1px}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.cloud-grid,.cmp{grid-template-columns:1fr}.section-head,.section-body,.hero{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="sidebar">
+  <div class="sb-brand">
+    <div class="logo"><span class="aws">AWS</span> · <span class="az">Azure</span> · <span class="gcp">GCP</span><br>Cloud AI Guide</div>
+    <p>BEGINNER TO ADVANCED · 2025</p>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Foundation</div>
+    <a class="nav-link active" href="#s1"><span class="ndot" style="background:#ff9900"></span>Services Overview</a>
+    <a class="nav-link" href="#s2"><span class="ndot" style="background:#0078d4"></span>Calling LLMs</a>
+    <a class="nav-link" href="#s3"><span class="ndot" style="background:#34a853"></span>Managed RAG</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">MLOps</div>
+    <a class="nav-link" href="#s4"><span class="ndot" style="background:#c084fc"></span>Build &amp; Train Models</a>
+    <a class="nav-link" href="#s5"><span class="ndot" style="background:#f472b6"></span>ML Pipelines</a>
+    <a class="nav-link" href="#s6"><span class="ndot" style="background:#fb923c"></span>Deploy &amp; Scale</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Quality</div>
+    <a class="nav-link" href="#s7"><span class="ndot" style="background:#4ade80"></span>Monitor Models</a>
+    <a class="nav-link" href="#s8"><span class="ndot" style="background:#f87171"></span>Debug Issues</a>
+    <a class="nav-link" href="#s9"><span class="ndot" style="background:#60a5fa"></span>Evaluate Models</a>
+    <a class="nav-link" href="#s10"><span class="ndot" style="background:#a78bfa"></span>Rank &amp; Compare</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">Advanced</div>
+    <a class="nav-link" href="#s11"><span class="ndot" style="background:#fbbf24"></span>Cost Optimization</a>
+    <a class="nav-link" href="#s12"><span class="ndot" style="background:#67e8f9"></span>Security</a>
+    <a class="nav-link" href="#s13"><span class="ndot" style="background:#86efac"></span>Comparison Cheatsheet</a>
+  </div>
+</nav>
+<div class="main">
+<div class="hero">
+  <div class="hero-eyebrow">Cloud AI · Complete Reference · 2025</div>
+  <h1><span class="aws">AWS</span> · <span class="az">Azure</span> · <span class="gcp">GCP</span><br>AI &amp; ML Masterguide</h1>
+  <p class="hero-sub">Every AI service, every pattern — build, deploy, monitor, evaluate, debug &amp; optimize ML across all three clouds. Beginner to advanced.</p>
+  <div class="hero-badges">
+    <span class="hbadge">Services</span><span class="hbadge">LLM Calling</span><span class="hbadge">Managed RAG</span>
+    <span class="hbadge">Training</span><span class="hbadge">Pipelines</span><span class="hbadge">Deploy</span>
+    <span class="hbadge">Monitor</span><span class="hbadge">Debug</span><span class="hbadge">Evaluate</span><span class="hbadge">Cost Optimization</span>
+  </div>
+</div>
+
+<!-- S1 SERVICES OVERVIEW -->
+<section class="section" id="s1">
+<div class="section-head"><div class="sec-num">01</div><div class="sec-info">
+  <span class="sec-tag" style="color:var(--accent);border-color:rgba(192,132,252,.3);background:rgba(192,132,252,.08)">FOUNDATION</span>
+  <h2>AI/ML Services Overview</h2>
+  <p class="sec-sub">Every AI service per cloud — 3 tiers: AI APIs | AutoML | Custom ML</p>
+</div></div>
+<div class="section-body">
+<div class="callout key"><div class="callout-icon">📐</div><p><strong>Three tiers exist on every cloud:</strong> Tier 1 = AI APIs (zero ML, just call an endpoint) · Tier 2 = AutoML (train without code) · Tier 3 = Custom ML (full control — SageMaker / Azure ML / Vertex AI)</p></div>
+<div class="mini-t">AWS AI/ML Services</div>
+<div class="cloud-grid">
+  <div class="cloud-card aws"><div class="cc-header"><span>🟠</span><span class="cc-logo aws">Amazon Bedrock</span></div>
+    <div class="cc-body"><h4>What it is</h4><ul><li>Managed Foundation Model API — no GPUs</li><li>Claude, Llama, Titan, Mistral, Cohere</li><li>Converse API unifies all models</li></ul>
+    <h4>Key Services</h4><ul><li>Knowledge Bases — managed RAG</li><li>Agents — serverless agent builder</li><li>Guardrails — safety filters + PII</li><li>Model Evaluation — compare models</li></ul></div></div>
+  <div class="cloud-card aws"><div class="cc-header"><span>⚙️</span><span class="cc-logo aws">Amazon SageMaker</span></div>
+    <div class="cc-body"><h4>What it is</h4><ul><li>End-to-end ML platform</li><li>Train, tune, deploy custom models</li></ul>
+    <h4>Key Features</h4><ul><li>Studio — web IDE for ML</li><li>Training Jobs — distributed GPU training</li><li>Endpoints — real-time inference</li><li>Pipelines — MLOps CI/CD</li><li>Model Registry — version models</li><li>JumpStart — pretrained model hub</li><li>Feature Store — feature management</li><li>Debugger — catch training issues</li><li>Clarify — bias + explainability</li></ul></div></div>
+  <div class="cloud-card aws"><div class="cc-header"><span>🔍</span><span class="cc-logo aws">AWS AI APIs (Tier 1)</span></div>
+    <div class="cc-body"><h4>No ML needed</h4><ul>
+    <li>Rekognition — image/video analysis</li><li>Comprehend — NLP, sentiment, entities</li>
+    <li>Translate — 75+ languages</li><li>Polly — Text-to-Speech</li>
+    <li>Transcribe — Speech-to-Text</li><li>Textract — Document OCR + extraction</li>
+    <li>Lex — Chatbot / conversational AI</li><li>Personalize — Recommendations engine</li>
+    <li>Forecast — Time series prediction</li><li>Kendra — Intelligent enterprise search</li>
+    <li>CodeWhisperer — AI code completion</li></ul></div></div>
+</div>
+<div class="mini-t">Azure AI/ML Services</div>
+<div class="cloud-grid">
+  <div class="cloud-card azure"><div class="cc-header"><span>🔵</span><span class="cc-logo azure">Azure OpenAI Service</span></div>
+    <div class="cc-body"><h4>What it is</h4><ul><li>GPT-4o, DALL-E, Whisper via Azure</li><li>Enterprise SLA + data privacy (no training on your data)</li><li>Same OpenAI SDK, different endpoint</li></ul>
+    <h4>Key Features</h4><ul><li>Deployment-based model access</li><li>Private VNET endpoint support</li><li>Content filtering built-in</li><li>Fine-tuning GPT-4o-mini</li><li>Responsible AI metrics dashboard</li></ul></div></div>
+  <div class="cloud-card azure"><div class="cc-header"><span>🤖</span><span class="cc-logo azure">Azure Machine Learning</span></div>
+    <div class="cc-body"><h4>What it is</h4><ul><li>Full MLOps platform</li><li>Train, deploy, monitor models</li></ul>
+    <h4>Key Features</h4><ul><li>Studio — no-code + code IDE</li><li>Compute clusters — GPU training</li><li>Model Registry — version + stage</li><li>Online/Batch Endpoints — serving</li><li>Pipelines — component-based MLOps</li><li>AutoML — automated training</li><li>Responsible AI Dashboard — fairness + SHAP</li><li>Prompt Flow — LLM workflow builder</li></ul></div></div>
+  <div class="cloud-card azure"><div class="cc-header"><span>🔎</span><span class="cc-logo azure">Azure AI Services (Tier 1)</span></div>
+    <div class="cc-body"><h4>No ML needed</h4><ul>
+    <li>Computer Vision — image analysis, OCR</li><li>Speech — STT, TTS, translation</li>
+    <li>Language — NLP, sentiment, NER, QA</li><li>AI Search — vector + semantic search</li>
+    <li>Document Intelligence — form extraction</li><li>Content Safety — harmful content API</li>
+    <li>Bot Service — chatbot builder</li><li>Personalizer — RL recommendations</li>
+    <li>Anomaly Detector — time series</li><li>Azure AI Foundry — model hub (Llama, Phi, Mistral)</li></ul></div></div>
+</div>
+<div class="mini-t">GCP AI/ML Services</div>
+<div class="cloud-grid">
+  <div class="cloud-card gcp"><div class="cc-header"><span>🟢</span><span class="cc-logo gcp">Vertex AI Platform</span></div>
+    <div class="cc-body"><h4>What it is</h4><ul><li>Unified ML platform — replaces AI Platform</li><li>Train, deploy, monitor custom models</li></ul>
+    <h4>Key Features</h4><ul><li>Workbench — managed Jupyter notebooks</li><li>Training — distributed GPU jobs</li><li>Model Registry — versioning + stages</li><li>Endpoints — real-time + batch serving</li><li>Pipelines — Kubeflow-based MLOps</li><li>Feature Store — centralized feature mgmt</li><li>Vector Search — managed HNSW (billions of vectors)</li><li>Model Garden — OSS + Google model hub</li><li>Explainable AI — SHAP attributions</li></ul></div></div>
+  <div class="cloud-card gcp"><div class="cc-header"><span>💎</span><span class="cc-logo gcp">Gemini API</span></div>
+    <div class="cc-body"><h4>What it is</h4><ul><li>Google flagship LLM family</li><li>Gemini 1.5 Pro — 1M token context</li><li>Gemini Flash — fast + cheap</li></ul>
+    <h4>Unique Capabilities</h4><ul><li>Natively multimodal — text/image/video/audio</li><li>1,000,000 token context window</li><li>Grounding with Google Search built-in</li><li>Code execution built-in</li><li>Available via Vertex AI or AI Studio</li><li>Gemini for Google Workspace integrations</li></ul></div></div>
+  <div class="cloud-card gcp"><div class="cc-header"><span>🔬</span><span class="cc-logo gcp">GCP AI APIs (Tier 1)</span></div>
+    <div class="cc-body"><h4>No ML needed</h4><ul>
+    <li>Cloud Vision — image analysis + OCR</li><li>Cloud Speech-to-Text — STT</li>
+    <li>Cloud Text-to-Speech — TTS</li><li>Cloud Natural Language — NLP</li>
+    <li>Cloud Translation — 100+ languages</li><li>Cloud Video Intelligence — video analysis</li>
+    <li>Document AI — OCR + form extraction</li><li>Recommendations AI — personalized recs</li>
+    <li>Contact Center AI — call center AI</li><li>Healthcare AI APIs — medical NLP</li></ul></div></div>
+</div>
+</div></section>
+
+<!-- S2 CALLING LLMs -->
+<section class="section" id="s2">
+<div class="section-head"><div class="sec-num">02</div><div class="sec-info">
+  <span class="sec-tag" style="color:#60b0ff;border-color:rgba(0,120,212,.3);background:rgba(0,120,212,.08)">LLM CALLING</span>
+  <h2>How to Call LLMs on Each Cloud</h2>
+  <p class="sec-sub">Exact Python code — Bedrock Converse API, Azure OpenAI, Vertex Gemini</p>
+</div></div>
+<div class="section-body">
+<div class="tabs">
+<div class="tab-btns">
+  <button class="tab-btn active aws" onclick="showTab(this,'llm-aws')">AWS Bedrock</button>
+  <button class="tab-btn azure" onclick="showTab(this,'llm-az')">Azure OpenAI</button>
+  <button class="tab-btn gcp" onclick="showTab(this,'llm-gcp')">GCP Vertex Gemini</button>
+</div>
+<div class="tab-panel active" id="llm-aws">
+<div class="code-wrap"><div class="code-label aws-bar"><span>AWS BEDROCK — Converse API (works for ALL models) <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">import</span> boto3
+
+<span class="cm"># Initialize Bedrock client (uses IAM role auth)</span>
+bedrock = boto3.<span class="fn">client</span>(service_name=<span class="st">"bedrock-runtime"</span>, region_name=<span class="st">"us-east-1"</span>)
+
+<span class="cm"># ── Basic chat completion ──────────────────────────────────</span>
+response = bedrock.<span class="fn">converse</span>(
+    modelId=<span class="st">"anthropic.claude-3-5-sonnet-20241022-v2:0"</span>,
+    messages=[{
+        <span class="st">"role"</span>: <span class="st">"user"</span>,
+        <span class="st">"content"</span>: [{<span class="st">"text"</span>: <span class="st">"Explain RAG in 2 sentences"</span>}]
+    }],
+    system=[{<span class="st">"text"</span>: <span class="st">"You are a helpful AI assistant."</span>}],
+    inferenceConfig={<span class="st">"maxTokens"</span>: <span class="num">500</span>, <span class="st">"temperature"</span>: <span class="num">0.7</span>}
+)
+text = response[<span class="st">"output"</span>][<span class="st">"message"</span>][<span class="st">"content"</span>][<span class="num">0</span>][<span class="st">"text"</span>]
+
+<span class="cm"># ── Streaming ──────────────────────────────────────────────</span>
+stream = bedrock.<span class="fn">converse_stream</span>(
+    modelId=<span class="st">"anthropic.claude-3-5-sonnet-20241022-v2:0"</span>,
+    messages=[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: [{<span class="st">"text"</span>: <span class="st">"Tell me a story"</span>}]}]
+)
+<span class="kw">for</span> event <span class="kw">in</span> stream[<span class="st">"stream"</span>]:
+    <span class="kw">if</span> <span class="st">"contentBlockDelta"</span> <span class="kw">in</span> event:
+        <span class="fn">print</span>(event[<span class="st">"contentBlockDelta"</span>][<span class="st">"delta"</span>][<span class="st">"text"</span>], end=<span class="st">""</span>)
+
+<span class="cm"># ── Function calling on Bedrock ────────────────────────────</span>
+response = bedrock.<span class="fn">converse</span>(
+    modelId=<span class="st">"anthropic.claude-3-5-sonnet-20241022-v2:0"</span>,
+    messages=[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: [{<span class="st">"text"</span>: <span class="st">"Get weather in Bengaluru"</span>}]}],
+    toolConfig={
+        <span class="st">"tools"</span>: [{
+            <span class="st">"toolSpec"</span>: {
+                <span class="st">"name"</span>: <span class="st">"get_weather"</span>,
+                <span class="st">"description"</span>: <span class="st">"Get weather for a city"</span>,
+                <span class="st">"inputSchema"</span>: {<span class="st">"json"</span>: {
+                    <span class="st">"type"</span>: <span class="st">"object"</span>,
+                    <span class="st">"properties"</span>: {<span class="st">"city"</span>: {<span class="st">"type"</span>: <span class="st">"string"</span>}},
+                    <span class="st">"required"</span>: [<span class="st">"city"</span>]
+                }}
+            }
+        }]
+    }
+)
+
+<span class="cm"># ── Available models on Bedrock ────────────────────────────</span>
+<span class="cm"># anthropic.claude-3-5-sonnet-20241022-v2:0  Claude 3.5 Sonnet (best)</span>
+<span class="cm"># anthropic.claude-3-haiku-20240307-v1:0     Claude 3 Haiku (fast cheap)</span>
+<span class="cm"># meta.llama3-70b-instruct-v1:0              Llama 3 70B</span>
+<span class="cm"># amazon.titan-text-express-v1               Amazon Titan</span>
+<span class="cm"># mistral.mistral-7b-instruct-v0:2           Mistral 7B</span>
+<span class="cm"># cohere.command-r-plus-v1:0                 Cohere Command R+</span></code></pre></div>
+<div class="callout warn"><div class="callout-icon">💡</div><p><strong>Bedrock key insight:</strong> The Converse API works identically across ALL model providers. Switch from Claude to Llama to Mistral by just changing <code>modelId</code>. No code changes needed.</p></div>
+</div>
+<div class="tab-panel" id="llm-az">
+<div class="code-wrap"><div class="code-label azure-bar"><span>AZURE OPENAI — Chat Completions <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> openai <span class="kw">import</span> AzureOpenAI
+<span class="kw">import</span> os
+
+<span class="cm"># Initialize Azure OpenAI client</span>
+client = <span class="cls">AzureOpenAI</span>(
+    azure_endpoint=os.<span class="fn">getenv</span>(<span class="st">"AZURE_OPENAI_ENDPOINT"</span>),
+    api_key=os.<span class="fn">getenv</span>(<span class="st">"AZURE_OPENAI_KEY"</span>),
+    api_version=<span class="st">"2024-02-01"</span>
+)
+
+<span class="cm"># ── Chat completion ────────────────────────────────────────</span>
+response = client.chat.completions.<span class="fn">create</span>(
+    model=<span class="st">"gpt-4o"</span>,          <span class="cm"># This is your DEPLOYMENT NAME, not model name!</span>
+    messages=[
+        {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: <span class="st">"You are a helpful assistant."</span>},
+        {<span class="st">"role"</span>: <span class="st">"user"</span>,   <span class="st">"content"</span>: <span class="st">"Explain Azure AI Search"</span>}
+    ],
+    temperature=<span class="num">0.7</span>, max_tokens=<span class="num">500</span>
+)
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cm"># ── Streaming ──────────────────────────────────────────────</span>
+stream = client.chat.completions.<span class="fn">create</span>(
+    model=<span class="st">"gpt-4o"</span>,
+    messages=[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: <span class="st">"Tell me a story"</span>}],
+    stream=<span class="kw">True</span>
+)
+<span class="kw">for</span> chunk <span class="kw">in</span> stream:
+    <span class="kw">if</span> chunk.choices[<span class="num">0</span>].delta.content:
+        <span class="fn">print</span>(chunk.choices[<span class="num">0</span>].delta.content, end=<span class="st">""</span>)
+
+<span class="cm"># ── Embeddings ──────────────────────────────────────────────</span>
+embed_resp = client.embeddings.<span class="fn">create</span>(
+    model=<span class="st">"text-embedding-3-small"</span>,  <span class="cm"># your embedding deployment name</span>
+    input=[<span class="st">"text to embed"</span>]
+)
+vector = embed_resp.data[<span class="num">0</span>].embedding  <span class="cm"># 1536-dim list</span>
+
+<span class="cm"># ── Azure AI Foundry SDK (new 2025) ─────────────────────────</span>
+<span class="kw">from</span> azure.ai.inference <span class="kw">import</span> ChatCompletionsClient
+<span class="kw">from</span> azure.core.credentials <span class="kw">import</span> AzureKeyCredential
+
+client2 = <span class="cls">ChatCompletionsClient</span>(
+    endpoint=<span class="st">"https://YOUR.services.ai.azure.com/models"</span>,
+    credential=<span class="cls">AzureKeyCredential</span>(os.<span class="fn">getenv</span>(<span class="st">"AZURE_KEY"</span>))
+)
+<span class="cm"># Supports GPT-4o, Llama, Mistral, Phi from ONE endpoint</span></code></pre></div>
+<div class="callout info"><div class="callout-icon">💡</div><p><strong>Azure key difference:</strong> The <code>model</code> param is your <strong>deployment name</strong> (not the OpenAI model name). You create deployments in Azure Portal and assign them custom names. Same OpenAI SDK — just use <code>AzureOpenAI</code> class instead of <code>OpenAI</code>.</p></div>
+</div>
+<div class="tab-panel" id="llm-gcp">
+<div class="code-wrap"><div class="code-label gcp-bar"><span>GCP VERTEX AI — Gemini API <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">import</span> vertexai
+<span class="kw">from</span> vertexai.generative_models <span class="kw">import</span> GenerativeModel, Part, GenerationConfig
+
+<span class="cm"># Initialize (uses Application Default Credentials)</span>
+vertexai.<span class="fn">init</span>(project=<span class="st">"your-gcp-project"</span>, location=<span class="st">"us-central1"</span>)
+
+<span class="cm"># ── Basic Gemini call ──────────────────────────────────────</span>
+model = <span class="cls">GenerativeModel</span>(<span class="st">"gemini-1.5-pro-002"</span>)
+response = model.<span class="fn">generate_content</span>(
+    <span class="st">"Explain RAG in 2 sentences"</span>,
+    generation_config=<span class="cls">GenerationConfig</span>(temperature=<span class="num">0.7</span>, max_output_tokens=<span class="num">500</span>)
+)
+<span class="fn">print</span>(response.text)
+
+<span class="cm"># ── Multi-turn chat ────────────────────────────────────────</span>
+chat = model.<span class="fn">start_chat</span>()
+r1 = chat.<span class="fn">send_message</span>(<span class="st">"What is RAG?"</span>)
+r2 = chat.<span class="fn">send_message</span>(<span class="st">"Give me a Python example"</span>)  <span class="cm"># keeps context!</span>
+
+<span class="cm"># ── Streaming ──────────────────────────────────────────────</span>
+<span class="kw">for</span> chunk <span class="kw">in</span> model.<span class="fn">generate_content</span>(<span class="st">"Tell me a story"</span>, stream=<span class="kw">True</span>):
+    <span class="fn">print</span>(chunk.text, end=<span class="st">""</span>)
+
+<span class="cm"># ── Multimodal (text + image + video — unique to Gemini!) ──</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"chart.png"</span>, <span class="st">"rb"</span>) <span class="kw">as</span> f:
+    img = <span class="cls">Part</span>.<span class="fn">from_data</span>(data=f.<span class="fn">read</span>(), mime_type=<span class="st">"image/png"</span>)
+response = model.<span class="fn">generate_content</span>([img, <span class="st">"What does this chart show?"</span>])
+
+<span class="cm"># ── 1M token context — feed entire documents! ──────────────</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"huge_codebase.py"</span>, <span class="st">"r"</span>) <span class="kw">as</span> f:
+    huge_doc = f.<span class="fn">read</span>()
+response = model.<span class="fn">generate_content</span>(f<span class="st">"Find bugs in this code:\n{huge_doc}"</span>)
+<span class="cm"># Works for files up to 1M tokens — no chunking needed!</span>
+
+<span class="cm"># ── Models available ───────────────────────────────────────</span>
+<span class="cm"># gemini-1.5-pro-002    1M context, most capable, multimodal</span>
+<span class="cm"># gemini-1.5-flash-002  fastest, cheapest, 1M context</span>
+<span class="cm"># gemini-1.0-pro        stable widely-used model</span></code></pre></div>
+<div class="callout tip"><div class="callout-icon">💡</div><p><strong>Gemini unique advantage:</strong> 1M token context window means you can feed entire codebases, hour-long video transcripts, or hundreds of documents in a single call — no chunking or RAG needed for many use cases.</p></div>
+</div>
+</div>
+<div class="mini-t">LLM Calling Quick Comparison</div>
+<div class="tbl-wrap"><table>
+  <tr><th>Aspect</th><th>AWS Bedrock</th><th>Azure OpenAI</th><th>GCP Vertex Gemini</th></tr>
+  <tr><td>SDK</td><td><code>boto3</code></td><td><code>openai</code> (AzureOpenAI class)</td><td><code>google-cloud-aiplatform</code></td></tr>
+  <tr><td>Auth</td><td>IAM roles / access keys</td><td>API key or Azure AD token</td><td>Service account / ADC</td></tr>
+  <tr><td>Models</td><td>Claude, Llama, Titan, Mistral, Cohere</td><td>GPT-4o, GPT-4, DALL-E, Whisper</td><td>Gemini 1.5 Pro/Flash, PaLM</td></tr>
+  <tr><td>Unique</td><td>Multi-vendor single API</td><td>Enterprise OpenAI + private VNET</td><td>1M token context, native multimodal</td></tr>
+  <tr><td>Streaming</td><td><code>converse_stream()</code></td><td><code>stream=True</code></td><td><code>stream=True</code></td></tr>
+  <tr><td>Function calling</td><td>toolConfig in Converse API</td><td>tools param (OpenAI format)</td><td>tools param in GenerativeModel</td></tr>
+</table></div>
+</div></section>
+
+<!-- S3 MANAGED RAG -->
+<section class="section" id="s3">
+<div class="section-head"><div class="sec-num">03</div><div class="sec-info">
+  <span class="sec-tag" style="color:var(--gcp);border-color:rgba(52,168,83,.3);background:rgba(52,168,83,.08)">MANAGED RAG</span>
+  <h2>Managed RAG on Each Cloud</h2>
+  <p class="sec-sub">Knowledge Bases (AWS) · AI Search (Azure) · Vertex RAG Engine (GCP)</p>
+</div></div>
+<div class="section-body">
+<div class="cmp">
+  <div class="cmp-col"><div class="cmp-head aws">🟠 AWS — Knowledge Bases</div><div class="cmp-body"><ul>
+    <li>Upload docs to S3 → auto-chunks + embeds</li>
+    <li>Default vector store: OpenSearch Serverless</li>
+    <li>Also supports: Pinecone, Redis, Aurora pgvector</li>
+    <li>RetrieveAndGenerate API — one call for full RAG</li>
+    <li>Retrieve API — retrieval only</li>
+    <li><strong>Metadata filtering: filter by department, date etc</strong></li>
+  </ul></div></div>
+  <div class="cmp-col"><div class="cmp-head azure">🔵 Azure — AI Search</div><div class="cmp-body"><ul>
+    <li>Index schema with vector + content fields</li>
+    <li>Vectorizers auto-embed at index + query time</li>
+    <li>Semantic Ranker — Microsoft reranker built-in</li>
+    <li>Hybrid: keyword BM25 + vector in one request</li>
+    <li>Integrates natively with Azure OpenAI</li>
+    <li><strong>Unique: Semantic Ranker is production-grade reranking</strong></li>
+  </ul></div></div>
+  <div class="cmp-col"><div class="cmp-head gcp">🟢 GCP — Vertex RAG Engine</div><div class="cmp-body"><ul>
+    <li>Create RAG corpus → import from GCS</li>
+    <li>Auto-chunks + embeds documents</li>
+    <li>Pair with Gemini as a Tool</li>
+    <li>Vertex AI Search — Google-quality semantic search</li>
+    <li>Grounding with Google Search — cite live web</li>
+    <li><strong>Unique: Google Search grounding for real-time facts</strong></li>
+  </ul></div></div>
+</div>
+
+<div class="tabs"><div class="tab-btns">
+  <button class="tab-btn active aws" onclick="showTab(this,'rag-aws')">AWS Knowledge Bases</button>
+  <button class="tab-btn azure" onclick="showTab(this,'rag-az')">Azure AI Search</button>
+  <button class="tab-btn gcp" onclick="showTab(this,'rag-gcp')">GCP Vertex RAG</button>
+</div>
+<div class="tab-panel active" id="rag-aws">
+<div class="code-wrap"><div class="code-label aws-bar"><span>AWS BEDROCK KNOWLEDGE BASES — Full RAG <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">import</span> boto3
+bedrock_agent = boto3.<span class="fn">client</span>(<span class="st">"bedrock-agent-runtime"</span>, region_name=<span class="st">"us-east-1"</span>)
+
+<span class="cm"># ── RAG in ONE call — retrieve + generate ──────────────────</span>
+response = bedrock_agent.<span class="fn">retrieve_and_generate</span>(
+    input={<span class="st">"text"</span>: <span class="st">"What is our refund policy?"</span>},
+    retrieveAndGenerateConfiguration={
+        <span class="st">"type"</span>: <span class="st">"KNOWLEDGE_BASE"</span>,
+        <span class="st">"knowledgeBaseConfiguration"</span>: {
+            <span class="st">"knowledgeBaseId"</span>: <span class="st">"YOUR_KB_ID"</span>,
+            <span class="st">"modelArn"</span>: <span class="st">"arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"</span>,
+            <span class="st">"retrievalConfiguration"</span>: {
+                <span class="st">"vectorSearchConfiguration"</span>: {<span class="st">"numberOfResults"</span>: <span class="num">5</span>}
+            }
+        }
+    }
+)
+answer = response[<span class="st">"output"</span>][<span class="st">"text"</span>]
+citations = response[<span class="st">"citations"</span>]   <span class="cm"># source doc references</span>
+
+<span class="cm"># ── Retrieve only (no generation) ──────────────────────────</span>
+chunks = bedrock_agent.<span class="fn">retrieve</span>(
+    knowledgeBaseId=<span class="st">"YOUR_KB_ID"</span>,
+    retrievalQuery={<span class="st">"text"</span>: <span class="st">"What is our refund policy?"</span>},
+    retrievalConfiguration={
+        <span class="st">"vectorSearchConfiguration"</span>: {
+            <span class="st">"numberOfResults"</span>: <span class="num">5</span>,
+            <span class="st">"filter"</span>: {  <span class="cm"># metadata filtering</span>
+                <span class="st">"equals"</span>: {<span class="st">"key"</span>: <span class="st">"department"</span>, <span class="st">"value"</span>: <span class="st">"HR"</span>}
+            }
+        }
+    }
+)[<span class="st">"retrievalResults"</span>]</code></pre></div></div>
+<div class="tab-panel" id="rag-az">
+<div class="code-wrap"><div class="code-label azure-bar"><span>AZURE AI SEARCH — Hybrid RAG Pipeline <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> azure.search.documents <span class="kw">import</span> SearchClient
+<span class="kw">from</span> azure.search.documents.models <span class="kw">import</span> VectorizedQuery
+<span class="kw">from</span> azure.core.credentials <span class="kw">import</span> AzureKeyCredential
+<span class="kw">from</span> openai <span class="kw">import</span> AzureOpenAI
+
+search = <span class="cls">SearchClient</span>(
+    endpoint=<span class="st">"https://YOUR-SEARCH.search.windows.net"</span>,
+    index_name=<span class="st">"my-index"</span>,
+    credential=<span class="cls">AzureKeyCredential</span>(<span class="st">"YOUR_ADMIN_KEY"</span>)
+)
+aoai = <span class="cls">AzureOpenAI</span>(azure_endpoint=<span class="st">"https://YOUR.openai.azure.com"</span>,
+                   api_key=<span class="st">"KEY"</span>, api_version=<span class="st">"2024-02-01"</span>)
+
+<span class="kw">def</span> <span class="fn">embed</span>(text):
+    <span class="kw">return</span> aoai.embeddings.<span class="fn">create</span>(model=<span class="st">"text-embedding-3-small"</span>, input=text).data[<span class="num">0</span>].embedding
+
+<span class="kw">def</span> <span class="fn">hybrid_rag</span>(query):
+    <span class="cm"># 1. Hybrid search: BM25 keyword + vector + Semantic Ranker</span>
+    results = search.<span class="fn">search</span>(
+        search_text=query,                     <span class="cm"># BM25 keyword</span>
+        vector_queries=[<span class="cls">VectorizedQuery</span>(      <span class="cm"># dense vector</span>
+            vector=<span class="fn">embed</span>(query), k_nearest_neighbors=<span class="num">5</span>, fields=<span class="st">"contentVector"</span>
+        )],
+        query_type=<span class="st">"semantic"</span>,               <span class="cm"># Semantic Ranker reranking</span>
+        semantic_configuration_name=<span class="st">"my-config"</span>,
+        select=[<span class="st">"content"</span>, <span class="st">"title"</span>, <span class="st">"source"</span>], top=<span class="num">5</span>
+    )
+    context = <span class="st">"\n"</span>.<span class="fn">join</span>([r[<span class="st">"content"</span>] <span class="kw">for</span> r <span class="kw">in</span> results])
+    <span class="cm"># 2. Generate answer</span>
+    answer = aoai.chat.completions.<span class="fn">create</span>(
+        model=<span class="st">"gpt-4o"</span>,
+        messages=[
+            {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: f<span class="st">"Answer from context:\n{context}"</span>},
+            {<span class="st">"role"</span>: <span class="st">"user"</span>,   <span class="st">"content"</span>: query}
+        ], temperature=<span class="num">0</span>
+    )
+    <span class="kw">return</span> answer.choices[<span class="num">0</span>].message.content</code></pre></div></div>
+<div class="tab-panel" id="rag-gcp">
+<div class="code-wrap"><div class="code-label gcp-bar"><span>GCP VERTEX AI RAG ENGINE <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> vertexai.preview <span class="kw">import</span> rag
+<span class="kw">from</span> vertexai.generative_models <span class="kw">import</span> GenerativeModel
+<span class="kw">from</span> vertexai.preview.generative_models <span class="kw">import</span> Tool
+<span class="kw">import</span> vertexai
+
+vertexai.<span class="fn">init</span>(project=<span class="st">"your-project"</span>, location=<span class="st">"us-central1"</span>)
+
+<span class="cm"># ── Create corpus and import docs from GCS ─────────────────</span>
+corpus = rag.<span class="fn">create_corpus</span>(display_name=<span class="st">"my-knowledge-base"</span>)
+rag.<span class="fn">import_files</span>(corpus.name,
+    paths=[<span class="st">"gs://my-bucket/docs/"</span>],
+    chunk_size=<span class="num">512</span>, chunk_overlap=<span class="num">100</span>
+)
+
+<span class="cm"># ── Retrieval only ─────────────────────────────────────────</span>
+results = rag.<span class="fn">retrieval_query</span>(
+    rag_resources=[rag.<span class="cls">RagResource</span>(rag_corpus=corpus.name)],
+    text=<span class="st">"What is the refund policy?"</span>,
+    similarity_top_k=<span class="num">5</span>
+)
+
+<span class="cm"># ── RAG + Gemini generation — attach as a Tool ─────────────</span>
+rag_tool = <span class="cls">Tool</span>.<span class="fn">from_retrieval</span>(
+    retrieval=rag.<span class="cls">Retrieval</span>(source=rag.<span class="cls">VertexRagStore</span>(
+        rag_resources=[rag.<span class="cls">RagResource</span>(rag_corpus=corpus.name)],
+        similarity_top_k=<span class="num">5</span>
+    ))
+)
+model = <span class="cls">GenerativeModel</span>(<span class="st">"gemini-1.5-pro-002"</span>, tools=[rag_tool])
+response = model.<span class="fn">generate_content</span>(<span class="st">"What is the refund policy?"</span>)
+<span class="fn">print</span>(response.text)  <span class="cm"># Gemini auto-retrieves and cites sources</span>
+
+<span class="cm"># ── Grounding with Google Search (real-time facts) ──────────</span>
+<span class="kw">from</span> vertexai.generative_models <span class="kw">import</span> grounding
+grounded_model = <span class="cls">GenerativeModel</span>(
+    <span class="st">"gemini-1.5-pro-002"</span>,
+    tools=[grounding.<span class="cls">GoogleSearchRetrieval</span>()]   <span class="cm"># search the live web!</span>
+)
+response = grounded_model.<span class="fn">generate_content</span>(<span class="st">"What is the latest AI news?"</span>)
+<span class="cm"># Cites real web sources, no hallucination on current events</span></code></pre></div></div></div>
+</div></section>
+
+<!-- S4 BUILD MODELS -->
+<section class="section" id="s4">
+<div class="section-head"><div class="sec-num">04</div><div class="sec-info">
+  <span class="sec-tag" style="color:var(--accent);border-color:rgba(192,132,252,.3);background:rgba(192,132,252,.08)">MODEL TRAINING</span>
+  <h2>Building &amp; Training Models</h2>
+  <p class="sec-sub">Custom model training — SageMaker, Azure ML, Vertex AI Training</p>
+</div></div>
+<div class="section-body">
+<div class="tabs"><div class="tab-btns">
+  <button class="tab-btn active aws" onclick="showTab(this,'train-aws')">AWS SageMaker</button>
+  <button class="tab-btn azure" onclick="showTab(this,'train-az')">Azure ML</button>
+  <button class="tab-btn gcp" onclick="showTab(this,'train-gcp')">Vertex AI Training</button>
+</div>
+<div class="tab-panel active" id="train-aws">
+<div class="code-wrap"><div class="code-label aws-bar"><span>SAGEMAKER — Training Job + HPO <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">import</span> sagemaker
+<span class="kw">from</span> sagemaker.pytorch <span class="kw">import</span> PyTorch
+<span class="kw">from</span> sagemaker.tuner <span class="kw">import</span> HyperparameterTuner, ContinuousParameter
+
+role = sagemaker.<span class="fn">get_execution_role</span>()
+
+<span class="cm"># ── Define training job ────────────────────────────────────</span>
+estimator = <span class="cls">PyTorch</span>(
+    entry_point=<span class="st">"train.py"</span>,
+    source_dir=<span class="st">"./src"</span>,
+    role=role,
+    framework_version=<span class="st">"2.1.0"</span>,
+    py_version=<span class="st">"py310"</span>,
+    instance_type=<span class="st">"ml.g5.xlarge"</span>,        <span class="cm"># A10G GPU</span>
+    instance_count=<span class="num">1</span>,
+    hyperparameters={<span class="st">"epochs"</span>: <span class="num">10</span>, <span class="st">"lr"</span>: <span class="num">0.001</span>, <span class="st">"batch_size"</span>: <span class="num">32</span>},
+    output_path=<span class="st">"s3://my-bucket/output"</span>,
+    use_spot_instances=<span class="kw">True</span>,             <span class="cm"># up to 90% cost saving!</span>
+    max_wait=<span class="num">7200</span>
+)
+estimator.<span class="fn">fit</span>({<span class="st">"train"</span>: <span class="st">"s3://my-bucket/train"</span>, <span class="st">"test"</span>: <span class="st">"s3://my-bucket/test"</span>})
+
+<span class="cm"># ── Distributed multi-GPU training ────────────────────────</span>
+dist_estimator = <span class="cls">PyTorch</span>(
+    entry_point=<span class="st">"train.py"</span>,
+    instance_type=<span class="st">"ml.g5.12xlarge"</span>,    <span class="cm"># 4 GPUs per node</span>
+    instance_count=<span class="num">4</span>,                  <span class="cm"># 16 GPUs total</span>
+    distribution={<span class="st">"torch_distributed"</span>: {<span class="st">"enabled"</span>: <span class="kw">True</span>}},
+    ...
+)
+
+<span class="cm"># ── Hyperparameter Tuning (HPO) ────────────────────────────</span>
+tuner = <span class="cls">HyperparameterTuner</span>(
+    estimator=estimator,
+    objective_metric_name=<span class="st">"validation:loss"</span>,
+    objective_type=<span class="st">"Minimize"</span>,
+    hyperparameter_ranges={
+        <span class="st">"lr"</span>: <span class="cls">ContinuousParameter</span>(<span class="num">0.0001</span>, <span class="num">0.1</span>),
+    },
+    max_jobs=<span class="num">20</span>, max_parallel_jobs=<span class="num">4</span>
+)
+tuner.<span class="fn">fit</span>({<span class="st">"train"</span>: <span class="st">"s3://my-bucket/train"</span>})</code></pre></div></div>
+<div class="tab-panel" id="train-az">
+<div class="code-wrap"><div class="code-label azure-bar"><span>AZURE ML — Training Job + AutoML <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> azure.ai.ml <span class="kw">import</span> MLClient, command
+<span class="kw">from</span> azure.ai.ml.entities <span class="kw">import</span> AmlCompute
+<span class="kw">from</span> azure.identity <span class="kw">import</span> DefaultAzureCredential
+
+ml_client = <span class="cls">MLClient</span>(
+    credential=<span class="cls">DefaultAzureCredential</span>(),
+    subscription_id=<span class="st">"YOUR_SUB"</span>,
+    resource_group_name=<span class="st">"my-rg"</span>,
+    workspace_name=<span class="st">"my-workspace"</span>
+)
+
+<span class="cm"># ── Create GPU compute cluster ──────────────────────────────</span>
+compute = <span class="cls">AmlCompute</span>(name=<span class="st">"gpu-cluster"</span>, type=<span class="st">"amlcompute"</span>,
+    size=<span class="st">"Standard_NC6s_v3"</span>, min_instances=<span class="num">0</span>, max_instances=<span class="num">4</span>)
+ml_client.compute.<span class="fn">begin_create_or_update</span>(compute).<span class="fn">result</span>()
+
+<span class="cm"># ── Submit training job ─────────────────────────────────────</span>
+job = <span class="fn">command</span>(
+    code=<span class="st">"./src"</span>,
+    command=<span class="st">"python train.py --epochs ${{inputs.epochs}} --lr ${{inputs.lr}}"</span>,
+    inputs={<span class="st">"epochs"</span>: <span class="num">10</span>, <span class="st">"lr"</span>: <span class="num">0.001</span>},
+    environment=<span class="st">"AzureML-pytorch-2.0-ubuntu20.04-py38-cuda11-gpu@latest"</span>,
+    compute=<span class="st">"gpu-cluster"</span>,
+    experiment_name=<span class="st">"my-experiment"</span>
+)
+returned_job = ml_client.jobs.<span class="fn">create_or_update</span>(job)
+<span class="fn">print</span>(returned_job.studio_url)  <span class="cm"># Open in Azure ML Studio</span>
+
+<span class="cm"># ── AutoML (no code training) ───────────────────────────────</span>
+<span class="kw">from</span> azure.ai.ml.automl <span class="kw">import</span> classification
+automl_job = <span class="fn">classification</span>(
+    compute=<span class="st">"gpu-cluster"</span>, training_data=training_data,
+    target_column_name=<span class="st">"label"</span>, primary_metric=<span class="st">"AUC_weighted"</span>,
+    n_cross_validations=<span class="num">5</span>, enable_model_explainability=<span class="kw">True</span>
+)</code></pre></div></div>
+<div class="tab-panel" id="train-gcp">
+<div class="code-wrap"><div class="code-label gcp-bar"><span>VERTEX AI — Custom Training + HPO <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> google.cloud <span class="kw">import</span> aiplatform
+<span class="kw">from</span> google.cloud.aiplatform <span class="kw">import</span> hyperparameter_tuning <span class="kw">as</span> hpt
+
+aiplatform.<span class="fn">init</span>(project=<span class="st">"my-project"</span>, location=<span class="st">"us-central1"</span>)
+
+<span class="cm"># ── Custom Training Job ─────────────────────────────────────</span>
+job = aiplatform.<span class="cls">CustomTrainingJob</span>(
+    display_name=<span class="st">"my-training-job"</span>,
+    script_path=<span class="st">"train.py"</span>,
+    container_uri=<span class="st">"us-docker.pkg.dev/vertex-ai/training/pytorch-gpu.2-1:latest"</span>,
+    requirements=[<span class="st">"transformers"</span>, <span class="st">"datasets"</span>]
+)
+model = job.<span class="fn">run</span>(
+    dataset=my_dataset,
+    model_display_name=<span class="st">"my-model-v1"</span>,
+    args=[<span class="st">"--epochs=10"</span>, <span class="st">"--lr=0.001"</span>],
+    machine_type=<span class="st">"n1-standard-8"</span>,
+    accelerator_type=<span class="st">"NVIDIA_TESLA_T4"</span>,
+    accelerator_count=<span class="num">2</span>
+)
+
+<span class="cm"># ── Hyperparameter Tuning (Vizier) ──────────────────────────</span>
+hp_job = aiplatform.<span class="cls">HyperparameterTuningJob</span>(
+    display_name=<span class="st">"hpt-job"</span>,
+    custom_job=custom_job,
+    metric_spec={<span class="st">"val_loss"</span>: <span class="st">"minimize"</span>},
+    parameter_spec={
+        <span class="st">"lr"</span>: hpt.<span class="cls">DoubleParameterSpec</span>(min=<span class="num">1e-4</span>, max=<span class="num">0.1</span>, scale=<span class="st">"log"</span>),
+        <span class="st">"epochs"</span>: hpt.<span class="cls">IntegerParameterSpec</span>(min=<span class="num">5</span>, max=<span class="num">50</span>, scale=<span class="st">"linear"</span>)
+    },
+    max_trial_count=<span class="num">20</span>, parallel_trial_count=<span class="num">4</span>
+)
+hp_job.<span class="fn">run</span>()</code></pre></div></div></div>
+</div></section>
+
+<!-- S5 PIPELINES -->
+<section class="section" id="s5">
+<div class="section-head"><div class="sec-num">05</div><div class="sec-info">
+  <span class="sec-tag" style="color:#f472b6;border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.08)">MLOPS PIPELINES</span>
+  <h2>ML Pipelines — CI/CD for ML</h2>
+  <p class="sec-sub">Automate training → evaluation → deployment workflows end-to-end</p>
+</div></div>
+<div class="section-body">
+<div class="mini-t">Common Pipeline Flow — All Clouds</div>
+<div class="flow">
+  <div class="flow-box"><span>TRIGGER</span>New data / schedule</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>DATA PREP</span>Preprocess + validate</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>TRAIN</span>Fit model on data</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>EVALUATE</span>Metrics check</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>CONDITION</span>Accuracy &gt;= threshold?</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>REGISTER</span>Save to model registry</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>DEPLOY</span>Push to endpoint</div>
+</div>
+<div class="code-wrap"><div class="code-label aws-bar"><span>SAGEMAKER PIPELINES — Full Conditional MLOps Pipeline <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> sagemaker.workflow.pipeline <span class="kw">import</span> Pipeline
+<span class="kw">from</span> sagemaker.workflow.steps <span class="kw">import</span> TrainingStep, ProcessingStep
+<span class="kw">from</span> sagemaker.workflow.step_collections <span class="kw">import</span> RegisterModel
+<span class="kw">from</span> sagemaker.workflow.conditions <span class="kw">import</span> ConditionGreaterThanOrEqualTo
+<span class="kw">from</span> sagemaker.workflow.condition_step <span class="kw">import</span> ConditionStep
+<span class="kw">from</span> sagemaker.workflow.functions <span class="kw">import</span> JsonGet
+
+<span class="cm"># Step 1: Data Processing</span>
+process_step = <span class="cls">ProcessingStep</span>(
+    name=<span class="st">"DataProcessing"</span>, processor=sklearn_processor,
+    inputs=[...], outputs=[...], code=<span class="st">"preprocess.py"</span>
+)
+
+<span class="cm"># Step 2: Training (depends on Step 1 output)</span>
+train_step = <span class="cls">TrainingStep</span>(
+    name=<span class="st">"ModelTraining"</span>, estimator=estimator,
+    inputs={<span class="st">"train"</span>: process_step.properties.ProcessingOutputConfig.Outputs[<span class="st">"train"</span>].S3Output.S3Uri}
+)
+
+<span class="cm"># Step 3: Evaluation</span>
+eval_step = <span class="cls">ProcessingStep</span>(
+    name=<span class="st">"ModelEvaluation"</span>, processor=eval_processor,
+    inputs=[<span class="cls">ProcessingInput</span>(source=train_step.properties.ModelArtifacts.S3ModelArtifacts, ...)],
+    code=<span class="st">"evaluate.py"</span>, property_files=[evaluation_report]
+)
+
+<span class="cm"># Step 4: Conditional Register — only if accuracy >= 85%</span>
+condition = <span class="cls">ConditionStep</span>(
+    name=<span class="st">"AccuracyGate"</span>,
+    conditions=[<span class="cls">ConditionGreaterThanOrEqualTo</span>(
+        left=<span class="cls">JsonGet</span>(step_name=eval_step.name, property_file=evaluation_report, json_path=<span class="st">"metrics.accuracy"</span>),
+        right=<span class="num">0.85</span>
+    )],
+    if_steps=[<span class="cls">RegisterModel</span>(
+        name=<span class="st">"RegisterModel"</span>, estimator=estimator,
+        model_data=train_step.properties.ModelArtifacts.S3ModelArtifacts,
+        model_package_group_name=<span class="st">"MyModelGroup"</span>,
+        approval_status=<span class="st">"PendingManualApproval"</span>
+    )],
+    else_steps=[]
+)
+
+<span class="cm"># Build and run</span>
+pipeline = <span class="cls">Pipeline</span>(
+    name=<span class="st">"MyMLPipeline"</span>,
+    steps=[process_step, train_step, eval_step, condition]
+)
+pipeline.<span class="fn">upsert</span>(role_arn=role)
+execution = pipeline.<span class="fn">start</span>()
+execution.<span class="fn">wait</span>()  <span class="cm"># blocks until done</span></code></pre></div>
+</div></section>
+
+<!-- S6 DEPLOY & SCALE -->
+<section class="section" id="s6">
+<div class="section-head"><div class="sec-num">06</div><div class="sec-info">
+  <span class="sec-tag" style="color:#fb923c;border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.08)">DEPLOYMENT</span>
+  <h2>Deploy &amp; Scale Models</h2>
+  <p class="sec-sub">Real-time endpoints, batch inference, serverless, auto-scaling, traffic splitting</p>
+</div></div>
+<div class="section-body">
+<div class="mini-t">Deployment Types Comparison</div>
+<div class="tbl-wrap"><table>
+  <tr><th>Type</th><th>AWS SageMaker</th><th>Azure ML</th><th>GCP Vertex AI</th><th>Use when</th></tr>
+  <tr><td>Real-time</td><td>Real-time Endpoint</td><td>Online Endpoint</td><td>Dedicated Endpoint</td><td>Low latency, user-facing</td></tr>
+  <tr><td>Serverless</td><td>Serverless Inference</td><td>Azure Functions</td><td>Cloud Run</td><td>Spiky traffic, pay-per-call</td></tr>
+  <tr><td>Batch</td><td>Batch Transform</td><td>Batch Endpoint</td><td>Batch Prediction Job</td><td>Bulk offline scoring</td></tr>
+  <tr><td>Async</td><td>Async Inference Endpoint</td><td>Not native</td><td>Not native</td><td>Long-running &gt;60s predictions</td></tr>
+  <tr><td>Multi-model</td><td>Multi-Model Endpoint</td><td>Multiple deployments</td><td>Multiple models</td><td>Many models, cost saving</td></tr>
+</table></div>
+<div class="tabs"><div class="tab-btns">
+  <button class="tab-btn active aws" onclick="showTab(this,'dep-aws')">AWS Deploy</button>
+  <button class="tab-btn azure" onclick="showTab(this,'dep-az')">Azure Deploy</button>
+  <button class="tab-btn gcp" onclick="showTab(this,'dep-gcp')">GCP Deploy</button>
+</div>
+<div class="tab-panel active" id="dep-aws">
+<div class="code-wrap"><div class="code-label aws-bar"><span>SAGEMAKER — Deploy + Auto-scaling <span class="lang">Python</span></span></div>
+<pre><code><span class="cm"># ── Deploy real-time endpoint ──────────────────────────────</span>
+predictor = estimator.<span class="fn">deploy</span>(
+    initial_instance_count=<span class="num">1</span>,
+    instance_type=<span class="st">"ml.g5.xlarge"</span>,
+    endpoint_name=<span class="st">"my-model-endpoint"</span>
+)
+result = predictor.<span class="fn">predict</span>({<span class="st">"text"</span>: <span class="st">"classify this"</span>})
+
+<span class="cm"># ── Auto-scaling ────────────────────────────────────────────</span>
+autoscaling = boto3.<span class="fn">client</span>(<span class="st">"application-autoscaling"</span>)
+autoscaling.<span class="fn">register_scalable_target</span>(
+    ServiceNamespace=<span class="st">"sagemaker"</span>,
+    ResourceId=<span class="st">"endpoint/my-model-endpoint/variant/AllTraffic"</span>,
+    ScalableDimension=<span class="st">"sagemaker:variant:DesiredInstanceCount"</span>,
+    MinCapacity=<span class="num">1</span>, MaxCapacity=<span class="num">10</span>
+)
+autoscaling.<span class="fn">put_scaling_policy</span>(
+    PolicyName=<span class="st">"InvocationsScaling"</span>,
+    PolicyType=<span class="st">"TargetTrackingScaling"</span>,
+    TargetTrackingScalingPolicyConfiguration={
+        <span class="st">"TargetValue"</span>: <span class="num">70.0</span>,    <span class="cm"># scale when invocations/instance &gt; 70</span>
+        <span class="st">"PredefinedMetricSpecification"</span>: {
+            <span class="st">"PredefinedMetricType"</span>: <span class="st">"SageMakerVariantInvocationsPerInstance"</span>
+        },
+        <span class="st">"ScaleInCooldown"</span>: <span class="num">300</span>, <span class="st">"ScaleOutCooldown"</span>: <span class="num">60</span>
+    }, ...
+)
+
+<span class="cm"># ── Serverless (zero cost when idle) ───────────────────────</span>
+<span class="kw">from</span> sagemaker.serverless <span class="kw">import</span> ServerlessInferenceConfig
+predictor = estimator.<span class="fn">deploy</span>(
+    serverless_inference_config=<span class="cls">ServerlessInferenceConfig</span>(
+        memory_size_in_mb=<span class="num">4096</span>, max_concurrency=<span class="num">10</span>
+    )
+)</code></pre></div></div>
+<div class="tab-panel" id="dep-az">
+<div class="code-wrap"><div class="code-label azure-bar"><span>AZURE ML — Online Endpoint + Traffic Splitting <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> azure.ai.ml.entities <span class="kw">import</span> ManagedOnlineEndpoint, ManagedOnlineDeployment
+
+<span class="cm"># ── Create endpoint ─────────────────────────────────────────</span>
+endpoint = <span class="cls">ManagedOnlineEndpoint</span>(name=<span class="st">"my-endpoint"</span>, auth_mode=<span class="st">"key"</span>)
+ml_client.online_endpoints.<span class="fn">begin_create_or_update</span>(endpoint).<span class="fn">result</span>()
+
+<span class="cm"># ── Deploy blue version ─────────────────────────────────────</span>
+blue = <span class="cls">ManagedOnlineDeployment</span>(
+    name=<span class="st">"blue"</span>, endpoint_name=<span class="st">"my-endpoint"</span>,
+    model=<span class="st">"azureml:my-model:1"</span>,
+    instance_type=<span class="st">"Standard_NC6s_v3"</span>, instance_count=<span class="num">1</span>
+)
+ml_client.online_deployments.<span class="fn">begin_create_or_update</span>(blue).<span class="fn">result</span>()
+
+<span class="cm"># ── Blue/Green canary — 10% to new version ─────────────────</span>
+endpoint.traffic = {<span class="st">"blue"</span>: <span class="num">90</span>, <span class="st">"green"</span>: <span class="num">10</span>}
+ml_client.online_endpoints.<span class="fn">begin_create_or_update</span>(endpoint)
+
+<span class="cm"># ── Invoke endpoint ─────────────────────────────────────────</span>
+result = ml_client.online_endpoints.<span class="fn">invoke</span>(
+    endpoint_name=<span class="st">"my-endpoint"</span>, request_file=<span class="st">"./sample.json"</span>
+)</code></pre></div></div>
+<div class="tab-panel" id="dep-gcp">
+<div class="code-wrap"><div class="code-label gcp-bar"><span>VERTEX AI — Deploy + Auto-scale <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> google.cloud <span class="kw">import</span> aiplatform
+
+<span class="cm"># ── Upload model + create endpoint + deploy ────────────────</span>
+model = aiplatform.Model.<span class="fn">upload</span>(
+    display_name=<span class="st">"my-model"</span>,
+    artifact_uri=<span class="st">"gs://my-bucket/model/"</span>,
+    serving_container_image_uri=<span class="st">"us-docker.pkg.dev/vertex-ai/prediction/pytorch-cpu.2-1:latest"</span>
+)
+endpoint = aiplatform.Endpoint.<span class="fn">create</span>(display_name=<span class="st">"my-endpoint"</span>)
+model.<span class="fn">deploy</span>(
+    endpoint=endpoint,
+    machine_type=<span class="st">"n1-standard-4"</span>,
+    accelerator_type=<span class="st">"NVIDIA_TESLA_T4"</span>,
+    accelerator_count=<span class="num">1</span>,
+    min_replica_count=<span class="num">1</span>,    <span class="cm"># auto-scale from 1</span>
+    max_replica_count=<span class="num">10</span>,   <span class="cm"># to max 10 replicas</span>
+    traffic_percentage=<span class="num">100</span>
+)
+
+<span class="cm"># ── Canary deployment — 10% to new version ─────────────────</span>
+new_model.<span class="fn">deploy</span>(endpoint=endpoint, traffic_percentage=<span class="num">10</span>)
+<span class="cm"># Old model: 90%, New model: 10% of traffic</span>
+
+predictions = endpoint.<span class="fn">predict</span>(instances=[{<span class="st">"text"</span>: <span class="st">"classify this"</span>}])</code></pre></div></div></div>
+</div></section>
+
+<!-- S7 MONITORING -->
+<section class="section" id="s7">
+<div class="section-head"><div class="sec-num">07</div><div class="sec-info">
+  <span class="sec-tag" style="color:#4ade80;border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.08)">MONITORING</span>
+  <h2>Model Monitoring in Production</h2>
+  <p class="sec-sub">Detect data drift, performance degradation, and operational issues</p>
+</div></div>
+<div class="section-body">
+<div class="mini-t">What to Monitor — All Clouds</div>
+<div class="cloud-grid">
+  <div class="cloud-card" style="border-color:rgba(74,222,128,.2)"><div class="cc-header"><span>📊</span><span style="font-weight:700;font-size:13px">Data Drift</span></div>
+    <div class="cc-body"><p style="font-size:12px;color:#c0c4d0;margin-bottom:8px">Input feature distribution shifts from training baseline. Model sees data it was never trained on.</p>
+    <h4>Signals</h4><ul><li>KS test / PSI score for numerical features</li><li>Chi-squared for categorical features</li><li>Covariate shift — X distribution changed</li><li>Concept drift — P(Y|X) changed</li></ul></div></div>
+  <div class="cloud-card" style="border-color:rgba(251,146,60,.2)"><div class="cc-header"><span>📉</span><span style="font-weight:700;font-size:13px">Model Performance Drift</span></div>
+    <div class="cc-body"><p style="font-size:12px;color:#c0c4d0;margin-bottom:8px">Accuracy, F1, or business KPIs degrade in production vs training baseline.</p>
+    <h4>Approaches</h4><ul><li>Ground truth comparison (delayed labels)</li><li>Prediction confidence tracking</li><li>Shadow deployment — compare models</li><li>Proxy metrics when labels unavailable</li></ul></div></div>
+  <div class="cloud-card" style="border-color:rgba(96,165,250,.2)"><div class="cc-header"><span>⚡</span><span style="font-weight:700;font-size:13px">Operational Metrics</span></div>
+    <div class="cc-body"><p style="font-size:12px;color:#c0c4d0;margin-bottom:8px">Latency, throughput, error rates, cost per inference for real-time endpoints.</p>
+    <h4>Track</h4><ul><li>P50/P95/P99 latency per endpoint</li><li>Invocation error rate — 4xx, 5xx</li><li>Throughput — requests/second</li><li>Token cost per request (LLMs)</li></ul></div></div>
+</div>
+<div class="tabs"><div class="tab-btns">
+  <button class="tab-btn active aws" onclick="showTab(this,'mon-aws')">AWS Model Monitor</button>
+  <button class="tab-btn azure" onclick="showTab(this,'mon-az')">Azure ML Monitor</button>
+  <button class="tab-btn gcp" onclick="showTab(this,'mon-gcp')">Vertex AI Monitor</button>
+</div>
+<div class="tab-panel active" id="mon-aws">
+<div class="code-wrap"><div class="code-label aws-bar"><span>SAGEMAKER MODEL MONITOR — Data Drift Detection <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> sagemaker.model_monitor <span class="kw">import</span> DefaultModelMonitor, DataCaptureConfig
+
+<span class="cm"># ── Step 1: Enable data capture on endpoint ────────────────</span>
+predictor = estimator.<span class="fn">deploy</span>(
+    ...,
+    data_capture_config=<span class="cls">DataCaptureConfig</span>(
+        enable_capture=<span class="kw">True</span>,
+        sampling_percentage=<span class="num">100</span>,
+        destination_s3_uri=<span class="st">"s3://my-bucket/capture"</span>
+    )
+)
+
+<span class="cm"># ── Step 2: Create baseline from training data ─────────────</span>
+monitor = <span class="cls">DefaultModelMonitor</span>(
+    role=role, instance_count=<span class="num">1</span>, instance_type=<span class="st">"ml.m5.xlarge"</span>
+)
+monitor.<span class="fn">suggest_baseline</span>(
+    baseline_dataset=<span class="st">"s3://my-bucket/train/baseline.csv"</span>,
+    dataset_format=sagemaker.model_monitor.DatasetFormat.<span class="fn">csv</span>(header=<span class="kw">True</span>)
+)
+
+<span class="cm"># ── Step 3: Schedule continuous monitoring ─────────────────</span>
+monitor.<span class="fn">create_monitoring_schedule</span>(
+    monitor_schedule_name=<span class="st">"data-quality-monitor"</span>,
+    endpoint_input=predictor.endpoint_name,
+    statistics=monitor.<span class="fn">baseline_statistics</span>(),
+    constraints=monitor.<span class="fn">suggested_constraints</span>(),
+    schedule_cron_expression=<span class="st">"cron(0 * ? * * *)"</span>  <span class="cm"># every hour</span>
+)
+
+<span class="cm"># ── Step 4: Check violations ───────────────────────────────</span>
+violations = monitor.<span class="fn">latest_monitoring_constraint_violations</span>()
+<span class="kw">for</span> v <span class="kw">in</span> violations.body_dict[<span class="st">"violations"</span>]:
+    <span class="fn">print</span>(f<span class="st">"{v['feature_name']}: {v['constraint_check_type']}"</span>)
+<span class="cm"># → "age": "baseline_drift_check"  means age feature drifted!</span></code></pre></div></div>
+<div class="tab-panel" id="mon-az">
+<div class="code-wrap"><div class="code-label azure-bar"><span>AZURE ML MODEL MONITOR — Data &amp; Prediction Drift <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> azure.ai.ml.entities <span class="kw">import</span> (
+    MonitorDefinition, MonitoringTarget, AlertNotification,
+    DataDriftSignal, PredictionDriftSignal, NumericalDriftMetrics
+)
+
+monitor = ml_client.model_monitors.<span class="fn">begin_create_or_update</span>(
+    MonitorDefinition(
+        compute=<span class="st">"serverless"</span>,
+        monitoring_target=<span class="cls">MonitoringTarget</span>(
+            endpoint_deployment_id=<span class="st">"my-endpoint:blue"</span>
+        ),
+        alert_notification=<span class="cls">AlertNotification</span>(emails=[<span class="st">"team@company.com"</span>]),
+        monitoring_signals={
+            <span class="st">"data_drift"</span>: <span class="cls">DataDriftSignal</span>(
+                reference_data=training_data,
+                metric_thresholds=[<span class="cls">NumericalDriftMetrics</span>(
+                    metric=<span class="st">"normalized_wasserstein_distance"</span>,
+                    threshold=<span class="num">0.1</span>   <span class="cm"># alert if Wasserstein dist &gt; 0.1</span>
+                )]
+            ),
+            <span class="st">"prediction_drift"</span>: <span class="cls">PredictionDriftSignal</span>(
+                reference_data=training_data,
+                metric_thresholds=[...]
+            )
+        }
+    )
+)
+<span class="cm"># View drift charts: Azure ML Studio → Model Monitoring tab</span>
+<span class="cm"># Alerts sent to email + Azure Monitor when thresholds exceeded</span></code></pre></div></div>
+<div class="tab-panel" id="mon-gcp">
+<div class="code-wrap"><div class="code-label gcp-bar"><span>VERTEX AI MODEL MONITORING <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> google.cloud <span class="kw">import</span> aiplatform
+
+monitoring_job = aiplatform.<span class="cls">ModelDeploymentMonitoringJob</span>.<span class="fn">create</span>(
+    display_name=<span class="st">"my-monitoring-job"</span>,
+    endpoint=endpoint.resource_name,
+    logging_sampling_strategy={
+        <span class="st">"random_sample_config"</span>: {<span class="st">"sample_rate"</span>: <span class="num">1.0</span>}  <span class="cm"># 100% sampling</span>
+    },
+    model_deployment_monitoring_objective_configs=[{
+        <span class="st">"deployed_model_id"</span>: deployed_model_id,
+        <span class="st">"objective_config"</span>: {
+            <span class="st">"training_dataset"</span>: {
+                <span class="st">"dataset"</span>: dataset.resource_name,
+                <span class="st">"target_field"</span>: <span class="st">"label"</span>
+            },
+            <span class="st">"training_prediction_skew_detection_config"</span>: {
+                <span class="st">"skew_thresholds"</span>: {
+                    <span class="st">"feature1"</span>: {<span class="st">"value"</span>: <span class="num">0.3</span>}  <span class="cm"># alert if drift &gt; 0.3</span>
+                }
+            },
+            <span class="st">"prediction_drift_detection_config"</span>: {
+                <span class="st">"drift_thresholds"</span>: {<span class="st">"feature1"</span>: {<span class="st">"value"</span>: <span class="num">0.3</span>}}
+            }
+        }
+    }],
+    model_monitoring_alert_config={
+        <span class="st">"email_alert_config"</span>: {<span class="st">"user_emails"</span>: [<span class="st">"team@company.com"</span>]}
+    },
+    monitor_interval={<span class="st">"seconds"</span>: <span class="num">3600</span>}  <span class="cm"># check every hour</span>
+)</code></pre></div></div></div>
+</div></section>
+
+<!-- S8 DEBUGGING -->
+<section class="section" id="s8">
+<div class="section-head"><div class="sec-num">08</div><div class="sec-info">
+  <span class="sec-tag" style="color:#f87171;border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.08)">DEBUGGING</span>
+  <h2>Debugging ML Issues</h2>
+  <p class="sec-sub">Diagnose training failures, drift, hallucinations, latency, and performance bugs</p>
+</div></div>
+<div class="section-body">
+<div class="tbl-wrap"><table>
+  <tr><th>Issue</th><th>AWS Tool</th><th>Azure Tool</th><th>GCP Tool</th><th>Fix</th></tr>
+  <tr><td>Training job fails</td><td>CloudWatch Logs</td><td>Azure ML job logs</td><td>Cloud Logging</td><td>Check stderr, OOM, path errors</td></tr>
+  <tr><td>Loss not decreasing</td><td>SageMaker Debugger</td><td>TensorBoard on AML</td><td>Cloud TensorBoard</td><td>LR too low, bad init, dead weights</td></tr>
+  <tr><td>Gradient explosion</td><td>Debugger: exploding_tensor rule</td><td>TensorBoard histograms</td><td>Cloud TensorBoard</td><td>Gradient clipping, lower LR</td></tr>
+  <tr><td>Overfitting</td><td>Debugger: overfit rule</td><td>AML eval metrics tab</td><td>Vertex job metrics</td><td>Regularization, dropout, more data</td></tr>
+  <tr><td>Endpoint errors</td><td>CloudWatch + X-Ray</td><td>Application Insights</td><td>Cloud Trace</td><td>Check 4xx/5xx, memory, timeouts</td></tr>
+  <tr><td>Slow inference</td><td>SageMaker Profiler</td><td>App Insights traces</td><td>Cloud Profiler</td><td>Quantize, batch inputs, use GPU</td></tr>
+  <tr><td>LLM hallucinations</td><td>RAGAS Faithfulness</td><td>Azure AI Groundedness</td><td>Vertex Safety filters</td><td>temperature=0, "only from context"</td></tr>
+  <tr><td>Bad predictions</td><td>SageMaker Clarify (SHAP)</td><td>Responsible AI Dashboard</td><td>Vertex Explainable AI</td><td>Feature importance, SHAP values</td></tr>
+</table></div>
+
+<div class="mini-t">SageMaker Debugger — Catch Training Issues Automatically</div>
+<div class="code-wrap"><div class="code-label aws-bar"><span>SAGEMAKER DEBUGGER — Auto-detect 7 Training Problems <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> sagemaker.debugger <span class="kw">import</span> Rule, rule_configs, DebuggerHookConfig, CollectionConfig
+
+<span class="cm"># Attach built-in rules — automatically detect common problems</span>
+rules = [
+    Rule.<span class="fn">sagemaker</span>(rule_configs.<span class="fn">loss_not_decreasing</span>()),     <span class="cm"># loss stuck</span>
+    Rule.<span class="fn">sagemaker</span>(rule_configs.<span class="fn">exploding_tensor</span>()),         <span class="cm"># gradient explosion</span>
+    Rule.<span class="fn">sagemaker</span>(rule_configs.<span class="fn">vanishing_gradient</span>()),       <span class="cm"># gradients → 0</span>
+    Rule.<span class="fn">sagemaker</span>(rule_configs.<span class="fn">dying_relu</span>()),              <span class="cm"># dead neurons</span>
+    Rule.<span class="fn">sagemaker</span>(rule_configs.<span class="fn">overfit</span>()),                 <span class="cm"># train/val gap</span>
+    Rule.<span class="fn">sagemaker</span>(rule_configs.<span class="fn">overtraining</span>()),            <span class="cm"># val loss rising</span>
+    Rule.<span class="fn">sagemaker</span>(rule_configs.<span class="fn">weight_update_ratio</span>()),     <span class="cm"># bad LR</span>
+]
+
+estimator = <span class="cls">PyTorch</span>(
+    entry_point=<span class="st">"train.py"</span>,
+    rules=rules,
+    debugger_hook_config=<span class="cls">DebuggerHookConfig</span>(
+        s3_output_path=<span class="st">"s3://my-bucket/debug-tensors"</span>,
+        collection_configs=[
+            <span class="cls">CollectionConfig</span>(<span class="st">"weights"</span>),
+            <span class="cls">CollectionConfig</span>(<span class="st">"gradients"</span>),
+            <span class="cls">CollectionConfig</span>(<span class="st">"losses"</span>)
+        ]
+    ), ...
+)
+estimator.<span class="fn">fit</span>()
+
+<span class="cm"># Check results after training</span>
+<span class="kw">for</span> r <span class="kw">in</span> estimator.<span class="fn">latest_training_job</span>().<span class="fn">rule_job_summaries</span>():
+    <span class="fn">print</span>(r[<span class="st">"RuleConfigurationName"</span>], r[<span class="st">"RuleEvaluationStatus"</span>])
+<span class="cm"># ExplodingTensor   IssuesFound    ← gradient explosion detected!</span>
+<span class="cm"># LossNotDecreasing NoIssuesFound</span>
+<span class="cm"># DyingRelu         NoIssuesFound</span></code></pre></div>
+
+<div class="mini-t">LLM-Specific Debugging — Universal (All Clouds)</div>
+<div class="cloud-grid">
+  <div class="cloud-card"><div class="cc-header"><span>🔍</span><span style="font-weight:700;font-size:13px">Hallucination Debug</span></div>
+    <div class="cc-body"><ul><li>Measure RAGAS Faithfulness score</li><li>Add "only answer from the provided context" to system prompt</li><li>Set temperature=0 for factual/RAG tasks</li><li>Use LangSmith to trace each retrieval + generation step</li><li>If Faithfulness low → retrieval is weak, not generation</li></ul></div></div>
+  <div class="cloud-card"><div class="cc-header"><span>⏱️</span><span style="font-weight:700;font-size:13px">Latency Debug</span></div>
+    <div class="cc-body"><ul><li>Measure time_to_first_token vs total_generation_time</li><li>Enable streaming → improves perceived latency immediately</li><li>Count tokens: shorter prompts = faster (use tiktoken)</li><li>Route simple queries to smaller model</li><li>Semantic cache for repeated similar queries (GPTCache)</li></ul></div></div>
+  <div class="cloud-card"><div class="cc-header"><span>💸</span><span style="font-weight:700;font-size:13px">Cost Debug</span></div>
+    <div class="cc-body"><ul><li>Use tiktoken to count tokens before sending</li><li>LangSmith tracks tokens + cost per call automatically</li><li>AWS: CloudWatch → InvocationInputTokenCount metric</li><li>Azure: Cost Management + OpenAI usage dashboard</li><li>GCP: Billing export to BigQuery for analysis</li></ul></div></div>
+</div>
+</div></section>
+
+<!-- S9 EVALUATE -->
+<section class="section" id="s9">
+<div class="section-head"><div class="sec-num">09</div><div class="sec-info">
+  <span class="sec-tag" style="color:#60a5fa;border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.08)">EVALUATION</span>
+  <h2>Model Evaluation</h2>
+  <p class="sec-sub">RAGAS, LLM-as-judge, Bedrock Eval, Azure Responsible AI, Vertex Explainable AI</p>
+</div></div>
+<div class="section-body">
+<div class="cmp">
+  <div class="cmp-col"><div class="cmp-head aws">🟠 AWS — Bedrock Evaluation</div><div class="cmp-body"><ul>
+    <li>Bedrock Model Evaluation — no-code compare models</li>
+    <li>Automatic metrics: accuracy, robustness, toxicity</li>
+    <li>Human evaluation workflow built-in</li>
+    <li>SageMaker Clarify — bias detection + SHAP</li>
+    <li>SageMaker Model Cards — document model for governance</li>
+    <li><strong>API: bedrock.create_evaluation_job()</strong></li>
+  </ul></div></div>
+  <div class="cmp-col"><div class="cmp-head azure">🔵 Azure — Responsible AI</div><div class="cmp-body"><ul>
+    <li>Responsible AI Dashboard in Azure ML Studio</li>
+    <li>Error analysis — where does model fail?</li>
+    <li>Fairness — bias across demographic groups</li>
+    <li>Interpretability — SHAP + feature importance</li>
+    <li>Counterfactual — what would change prediction?</li>
+    <li>Azure AI Evaluation SDK for LLM quality</li>
+    <li><strong>pip install azure-ai-evaluation</strong></li>
+  </ul></div></div>
+  <div class="cmp-col"><div class="cmp-head gcp">🟢 GCP — Vertex Explainable AI</div><div class="cmp-body"><ul>
+    <li>Feature attributions via Shapley values</li>
+    <li>Integrated Gradients for deep learning</li>
+    <li>XRAI for image explanations</li>
+    <li>Works on every Vertex AI endpoint — toggle on</li>
+    <li>Vertex AI Evaluation Service for LLMs</li>
+    <li>Model Cards generator built-in</li>
+    <li><strong>API: model.explain(instances=[...])</strong></li>
+  </ul></div></div>
+</div>
+
+<div class="mini-t">RAGAS + LLM-as-Judge — Universal (Works on All Clouds)</div>
+<div class="code-wrap"><div class="code-label" style="border-left:3px solid var(--accent)"><span>RAGAS — 4 Key Metrics for RAG Evaluation <span class="lang">Python</span></span><span>pip install ragas</span></div>
+<pre><code><span class="kw">from</span> ragas <span class="kw">import</span> evaluate
+<span class="kw">from</span> ragas.metrics <span class="kw">import</span> faithfulness, answer_relevancy, context_precision, context_recall
+<span class="kw">from</span> datasets <span class="kw">import</span> Dataset
+
+<span class="cm"># Build evaluation dataset</span>
+eval_data = {
+    <span class="st">"question"</span>: [<span class="st">"What is the refund policy?"</span>],
+    <span class="st">"answer"</span>: [<span class="st">"Refunds processed within 30 days."</span>],
+    <span class="st">"contexts"</span>: [[<span class="st">"Our refund policy is 30 days for all purchases."</span>]],
+    <span class="st">"ground_truth"</span>: [<span class="st">"30-day refund policy"</span>]
+}
+dataset = Dataset.<span class="fn">from_dict</span>(eval_data)
+
+results = <span class="fn">evaluate</span>(
+    dataset=dataset,
+    metrics=[faithfulness, answer_relevancy, context_precision, context_recall]
+)
+<span class="fn">print</span>(results.to_pandas())
+<span class="cm"># faithfulness=0.92  → Answer grounded in context? (no hallucination)</span>
+<span class="cm"># answer_relevancy=0.88 → Answer addressed the question?</span>
+<span class="cm"># context_precision=0.85 → Retrieved docs were relevant? (low noise)</span>
+<span class="cm"># context_recall=0.79 → Found all relevant docs? (no misses)</span>
+
+<span class="cm"># ── LLM-as-judge pattern ──────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">llm_judge</span>(question, answer, expected, client):
+    prompt = f<span class="st">"""Score this answer 0-10.
+Question: {question}
+Expected: {expected}
+Actual: {answer}
+Return ONLY JSON: {{"score": N, "reason": "brief explanation"}}"""</span>
+
+    result = client.chat.completions.<span class="fn">create</span>(
+        model=<span class="st">"gpt-4o"</span>,
+        messages=[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: prompt}],
+        response_format={<span class="st">"type"</span>: <span class="st">"json_object"</span>}
+    )
+    <span class="kw">import</span> json
+    <span class="kw">return</span> json.<span class="fn">loads</span>(result.choices[<span class="num">0</span>].message.content)
+
+<span class="cm"># → {"score": 9, "reason": "Correct and concise"}</span></code></pre></div>
+
+<div class="mini-t">Azure AI Evaluation SDK</div>
+<div class="code-wrap"><div class="code-label azure-bar"><span>AZURE AI EVALUATION — Groundedness, Relevance, Coherence <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">from</span> azure.ai.evaluation <span class="kw">import</span> (
+    GroundednessEvaluator, RelevanceEvaluator,
+    CoherenceEvaluator, FluencyEvaluator
+)
+
+model_config = {
+    <span class="st">"azure_endpoint"</span>: <span class="st">"https://YOUR.openai.azure.com"</span>,
+    <span class="st">"api_key"</span>: <span class="st">"YOUR_KEY"</span>,
+    <span class="st">"azure_deployment"</span>: <span class="st">"gpt-4o"</span>,
+    <span class="st">"api_version"</span>: <span class="st">"2024-02-01"</span>
+}
+
+<span class="cm"># LLM-as-judge evaluators — GPT-4o scores your model's outputs</span>
+groundedness = <span class="cls">GroundednessEvaluator</span>(model_config)   <span class="cm"># = RAGAS Faithfulness</span>
+relevance    = <span class="cls">RelevanceEvaluator</span>(model_config)       <span class="cm"># = RAGAS Answer Relevancy</span>
+coherence    = <span class="cls">CoherenceEvaluator</span>(model_config)
+fluency      = <span class="cls">FluencyEvaluator</span>(model_config)
+
+score = <span class="fn">groundedness</span>(
+    query=<span class="st">"What is the refund policy?"</span>,
+    response=<span class="st">"Refunds take 30 days."</span>,
+    context=<span class="st">"Our refund policy is 30 days."</span>
+)
+<span class="cm"># → {"groundedness": 5.0}  (out of 5)</span></code></pre></div>
+</div></section>
+
+<!-- S10 RANK COMPARE -->
+<section class="section" id="s10">
+<div class="section-head"><div class="sec-num">10</div><div class="sec-info">
+  <span class="sec-tag" style="color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08)">MODEL RANKING</span>
+  <h2>Ranking &amp; Comparing Models</h2>
+  <p class="sec-sub">A/B testing, champion-challenger, model registry, MLflow experiment tracking</p>
+</div></div>
+<div class="section-body">
+<div class="mini-t">Champion-Challenger Pattern</div>
+<div class="flow">
+  <div class="flow-box"><span>CHAMPION</span>Current prod model</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>CHALLENGER</span>New candidate</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>SHADOW 5%</span>Route small traffic</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>COMPARE</span>Metrics side-by-side</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>PROMOTE</span>If challenger wins</div><div class="flow-arr">→</div>
+  <div class="flow-box"><span>RETIRE</span>Decommission old</div>
+</div>
+<div class="code-wrap"><div class="code-label" style="border-left:3px solid var(--accent)"><span>MODEL REGISTRY + MLFLOW — Universal Version Management <span class="lang">Python</span></span></div>
+<pre><code><span class="cm"># ── AWS SageMaker Model Registry ──────────────────────────</span>
+<span class="kw">import</span> boto3
+sm = boto3.<span class="fn">client</span>(<span class="st">"sagemaker"</span>)
+sm.<span class="fn">create_model_package_group</span>(
+    ModelPackageGroupName=<span class="st">"MyModelFamily"</span>,
+    ModelPackageGroupDescription=<span class="st">"All versions of my NLP model"</span>
+)
+<span class="cm"># Approve model for production</span>
+sm.<span class="fn">update_model_package</span>(
+    ModelPackageArn=<span class="st">"arn:aws:sagemaker:us-east-1:123:model-package/MyModelFamily/3"</span>,
+    ModelApprovalStatus=<span class="st">"Approved"</span>  <span class="cm"># Approved | Rejected | PendingManualApproval</span>
+)
+
+<span class="cm"># ── Azure ML Model Registry ────────────────────────────────</span>
+<span class="kw">from</span> azure.ai.ml.entities <span class="kw">import</span> Model
+ml_client.models.<span class="fn">create_or_update</span>(Model(
+    name=<span class="st">"my-nlp-model"</span>, version=<span class="st">"3"</span>, path=<span class="st">"./model"</span>,
+    description=<span class="st">"v3: improved edge case accuracy"</span>,
+    tags={<span class="st">"accuracy"</span>: <span class="st">"0.94"</span>, <span class="st">"stage"</span>: <span class="st">"staging"</span>}
+))
+
+<span class="cm"># ── GCP Vertex AI Model Registry ──────────────────────────</span>
+model = aiplatform.Model.<span class="fn">upload</span>(
+    display_name=<span class="st">"my-nlp-model-v3"</span>,
+    artifact_uri=<span class="st">"gs://my-bucket/model-v3/"</span>,
+    labels={<span class="st">"stage"</span>: <span class="st">"staging"</span>, <span class="st">"accuracy"</span>: <span class="st">"0-94"</span>}
+)
+
+<span class="cm"># ── MLflow (Universal — runs on ALL clouds) ────────────────</span>
+<span class="kw">import</span> mlflow
+<span class="kw">with</span> mlflow.<span class="fn">start_run</span>(run_name=<span class="st">"model-v3"</span>):
+    mlflow.<span class="fn">log_params</span>({<span class="st">"lr"</span>: <span class="num">0.001</span>, <span class="st">"epochs"</span>: <span class="num">20</span>})
+    mlflow.<span class="fn">log_metrics</span>({<span class="st">"accuracy"</span>: <span class="num">0.94</span>, <span class="st">"f1"</span>: <span class="num">0.92</span>})
+    mlflow.pytorch.<span class="fn">log_model</span>(model, <span class="st">"model"</span>)
+
+<span class="cm"># Compare runs in MLflow UI → choose champion</span>
+mlflow.<span class="fn">register_model</span>(<span class="st">"runs:/abc123/model"</span>, <span class="st">"MyNLPModel"</span>)
+mlflow.<span class="fn">transition_model_version_stage</span>(<span class="st">"MyNLPModel"</span>, <span class="num">3</span>, <span class="st">"Production"</span>)
+<span class="cm"># Stages: None → Staging → PendingManualApproval → Production → Archived</span></code></pre></div>
+
+<div class="mini-t">Compare LLMs — Bedrock Model Evaluation</div>
+<div class="code-wrap"><div class="code-label aws-bar"><span>BEDROCK MODEL EVALUATION — Compare Claude vs GPT-4o <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">import</span> boto3
+bedrock = boto3.<span class="fn">client</span>(<span class="st">"bedrock"</span>, region_name=<span class="st">"us-east-1"</span>)
+
+<span class="cm"># Create evaluation job comparing multiple models</span>
+response = bedrock.<span class="fn">create_evaluation_job</span>(
+    jobName=<span class="st">"compare-claude-vs-llama"</span>,
+    evaluationConfig={
+        <span class="st">"automated"</span>: {
+            <span class="st">"datasetMetricConfigs"</span>: [{
+                <span class="st">"taskType"</span>: <span class="st">"QuestionAndAnswer"</span>,
+                <span class="st">"dataset"</span>: {
+                    <span class="st">"name"</span>: <span class="st">"my-eval-dataset"</span>,
+                    <span class="st">"datasetLocation"</span>: {
+                        <span class="st">"s3Uri"</span>: <span class="st">"s3://my-bucket/eval-questions.jsonl"</span>
+                    }
+                },
+                <span class="st">"metricNames"</span>: [<span class="st">"Accuracy"</span>, <span class="st">"Robustness"</span>, <span class="st">"Toxicity"</span>]
+            }]
+        }
+    },
+    inferenceConfig={
+        <span class="st">"models"</span>: [
+            {<span class="st">"bedrockModel"</span>: {<span class="st">"modelIdentifier"</span>: <span class="st">"anthropic.claude-3-5-sonnet-20241022-v2:0"</span>}},
+            {<span class="st">"bedrockModel"</span>: {<span class="st">"modelIdentifier"</span>: <span class="st">"meta.llama3-70b-instruct-v1:0"</span>}}
+        ]
+    },
+    outputDataConfig={<span class="st">"s3Uri"</span>: <span class="st">"s3://my-bucket/eval-results"</span>},
+    roleArn=role
+)
+<span class="cm"># View results in Bedrock console → side-by-side model comparison</span></code></pre></div>
+</div></section>
+
+<!-- S11 COST -->
+<section class="section" id="s11">
+<div class="section-head"><div class="sec-num">11</div><div class="sec-info">
+  <span class="sec-tag" style="color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08)">COST OPTIMIZATION</span>
+  <h2>Cost Optimization Strategies</h2>
+  <p class="sec-sub">Reduce LLM and ML infrastructure costs by 50–90% with smart patterns</p>
+</div></div>
+<div class="section-body">
+<div class="tbl-wrap"><table>
+  <tr><th>Strategy</th><th>AWS</th><th>Azure</th><th>GCP</th><th>Saving</th></tr>
+  <tr><td>Spot / Preemptible instances</td><td>Spot Instances</td><td>Spot VMs</td><td>Preemptible / Spot</td><td>Up to 90%</td></tr>
+  <tr><td>Serverless inference</td><td>SageMaker Serverless</td><td>Azure Functions + ONNX</td><td>Cloud Run</td><td>Pay per request only</td></tr>
+  <tr><td>Batch API (async)</td><td>Bedrock Batch Inference</td><td>OpenAI Batch via Azure</td><td>Vertex Batch Prediction</td><td>50% cheaper</td></tr>
+  <tr><td>Model routing</td><td>Cheap Bedrock model for simple</td><td>GPT-4o-mini for simple</td><td>Gemini Flash vs Pro</td><td>10–50× cheaper</td></tr>
+  <tr><td>Semantic cache</td><td>ElastiCache + GPTCache</td><td>Azure Cache + semantic cache</td><td>Memorystore + GPTCache</td><td>30–70% fewer calls</td></tr>
+  <tr><td>Prompt compression</td><td>LLMLingua on any cloud</td><td>Azure Prompt Compression</td><td>LLMLingua on any cloud</td><td>50–80% token reduction</td></tr>
+  <tr><td>Model compression</td><td>SageMaker Neo compile</td><td>ONNX Runtime export</td><td>TFLite / TensorRT</td><td>2–4× faster, cheaper</td></tr>
+  <tr><td>Reserved capacity</td><td>Savings Plans / Reserved</td><td>Reserved Instances</td><td>Committed Use Contracts</td><td>30–60%</td></tr>
+</table></div>
+
+<div class="code-wrap"><div class="code-label" style="border-left:3px solid #fbbf24"><span>MODEL ROUTING + SEMANTIC CACHE — Smart Cost Reduction <span class="lang">Python</span></span></div>
+<pre><code><span class="cm"># ── Model routing: cheap for simple, expensive for hard ───</span>
+<span class="kw">def</span> <span class="fn">smart_route</span>(query: str, client) -> str:
+    <span class="cm"># Classify complexity first with cheapest model</span>
+    classify = client.chat.completions.<span class="fn">create</span>(
+        model=<span class="st">"gpt-4o-mini"</span>,          <span class="cm"># ~100× cheaper than gpt-4o</span>
+        messages=[{<span class="st">"role"</span>: <span class="st">"user"</span>,
+            <span class="st">"content"</span>: f<span class="st">"Is this query simple (yes/no)?\nQuery: {query}"</span>}],
+        max_tokens=<span class="num">5</span>
+    )
+    is_simple = <span class="st">"yes"</span> <span class="kw">in</span> classify.choices[<span class="num">0</span>].message.content.lower()
+    model = <span class="st">"gpt-4o-mini"</span> <span class="kw">if</span> is_simple <span class="kw">else</span> <span class="st">"gpt-4o"</span>
+    
+    response = client.chat.completions.<span class="fn">create</span>(
+        model=model,
+        messages=[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: query}]
+    )
+    <span class="kw">return</span> response.choices[<span class="num">0</span>].message.content
+
+<span class="cm"># ── Semantic cache — skip API for repeated similar queries ─</span>
+<span class="kw">from</span> gptcache <span class="kw">import</span> cache
+<span class="kw">from</span> gptcache.adapter <span class="kw">import</span> openai <span class="kw">as</span> cached_openai
+
+cache.<span class="fn">init</span>()  <span class="cm"># uses embedding similarity, not exact match</span>
+response = cached_openai.ChatCompletion.<span class="fn">create</span>(
+    model=<span class="st">"gpt-4o"</span>,
+    messages=[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: query}]
+)
+<span class="cm"># "What is your refund policy?" and "How do refunds work?"</span>
+<span class="cm"># → both hit cache if semantically similar. Zero API cost.</span>
+
+<span class="cm"># ── Count tokens before sending (avoid surprises) ─────────</span>
+<span class="kw">import</span> tiktoken
+enc = tiktoken.<span class="fn">encoding_for_model</span>(<span class="st">"gpt-4o"</span>)
+tokens = <span class="fn">len</span>(enc.<span class="fn">encode</span>(prompt))
+cost = tokens / <span class="num">1_000_000</span> * <span class="num">5.0</span>   <span class="cm"># gpt-4o = $5 per 1M input tokens</span>
+<span class="fn">print</span>(f<span class="st">"Tokens: {tokens}, Est cost: ${cost:.4f}"</span>)</code></pre></div>
+</div></section>
+
+<!-- S12 SECURITY -->
+<section class="section" id="s12">
+<div class="section-head"><div class="sec-num">12</div><div class="sec-info">
+  <span class="sec-tag" style="color:#67e8f9;border-color:rgba(103,232,249,.3);background:rgba(103,232,249,.08)">SECURITY</span>
+  <h2>Security &amp; Responsible AI</h2>
+  <p class="sec-sub">IAM, VNET isolation, content filtering, PII protection, prompt injection defense</p>
+</div></div>
+<div class="section-body">
+<div class="cloud-grid">
+  <div class="cloud-card aws"><div class="cc-header"><span>🔐</span><span class="cc-logo aws">AWS Security</span></div>
+    <div class="cc-body">
+      <h4>Identity &amp; Access</h4><ul><li>IAM roles for SageMaker/Bedrock — no keys in code</li><li>Resource-based policies on models and endpoints</li><li>VPC endpoints — traffic never leaves AWS network</li></ul>
+      <h4>Data Protection</h4><ul><li>S3 SSE-KMS — encrypt training data at rest</li><li>Your data never used to train AWS models (Bedrock)</li><li>Macie — detect PII in S3 buckets</li></ul>
+      <h4>LLM Safety</h4><ul><li>Bedrock Guardrails — topic deny, content filters</li><li>PII redaction — strip PII from prompts/responses</li><li>Grounding check — prevent hallucination</li><li>Contextual grounding threshold setting</li></ul>
+    </div></div>
+  <div class="cloud-card azure"><div class="cc-header"><span>🔐</span><span class="cc-logo azure">Azure Security</span></div>
+    <div class="cc-body">
+      <h4>Identity &amp; Access</h4><ul><li>Azure AD / Entra ID for all access</li><li>Managed Identity — zero secrets in code</li><li>Private Endpoints — VNET isolation</li></ul>
+      <h4>Data Protection</h4><ul><li>Customer-Managed Keys (CMK) for encryption</li><li>Microsoft Purview — data governance + lineage</li><li>No training on customer data (Azure OpenAI agreement)</li></ul>
+      <h4>LLM Safety</h4><ul><li>Azure Content Safety API — detect hate, violence, sexual</li><li>Prompt Shield — detect jailbreak attempts</li><li>Groundedness detection — spot unsupported claims</li><li>Responsible AI Impact Assessment toolkit</li></ul>
+    </div></div>
+  <div class="cloud-card gcp"><div class="cc-header"><span>🔐</span><span class="cc-logo gcp">GCP Security</span></div>
+    <div class="cc-body">
+      <h4>Identity &amp; Access</h4><ul><li>Service Accounts + Workload Identity Federation</li><li>VPC Service Controls — data perimeter</li><li>Private Service Connect — internal access</li></ul>
+      <h4>Data Protection</h4><ul><li>CMEK — customer encryption keys</li><li>Data Residency — keep data in chosen region</li><li>Assured Workloads — FedRAMP, HIPAA, ITAR compliance</li></ul>
+      <h4>LLM Safety</h4><ul><li>Vertex AI Safety filters on every Gemini call</li><li>Sensitive Data Protection (DLP) — auto PII detection</li><li>Model Armor — prompt injection defense for all models</li></ul>
+    </div></div>
+</div>
+
+<div class="mini-t">Bedrock Guardrails — LLM Safety Code</div>
+<div class="code-wrap"><div class="code-label aws-bar"><span>BEDROCK GUARDRAILS — Topic Deny + PII Redaction <span class="lang">Python</span></span></div>
+<pre><code><span class="kw">import</span> boto3
+bedrock = boto3.<span class="fn">client</span>(<span class="st">"bedrock"</span>)
+
+<span class="cm"># Create guardrail</span>
+guardrail = bedrock.<span class="fn">create_guardrail</span>(
+    name=<span class="st">"my-guardrail"</span>,
+    description=<span class="st">"Prevent off-topic and PII leakage"</span>,
+    topicPolicyConfig={
+        <span class="st">"topicsConfig"</span>: [{
+            <span class="st">"name"</span>: <span class="st">"OffTopicPolitics"</span>,
+            <span class="st">"definition"</span>: <span class="st">"Questions about political topics"</span>,
+            <span class="st">"type"</span>: <span class="st">"DENY"</span>
+        }]
+    },
+    sensitiveInformationPolicyConfig={
+        <span class="st">"piiEntitiesConfig"</span>: [
+            {<span class="st">"type"</span>: <span class="st">"EMAIL"</span>, <span class="st">"action"</span>: <span class="st">"ANONYMIZE"</span>},  <span class="cm"># redact emails</span>
+            {<span class="st">"type"</span>: <span class="st">"PHONE"</span>, <span class="st">"action"</span>: <span class="st">"ANONYMIZE"</span>},  <span class="cm"># redact phone numbers</span>
+            {<span class="st">"type"</span>: <span class="st">"NAME"</span>, <span class="st">"action"</span>: <span class="st">"ANONYMIZE"</span>}     <span class="cm"># redact names</span>
+        ]
+    }
+)
+guardrail_id = guardrail[<span class="st">"guardrailId"</span>]
+
+<span class="cm"># Apply guardrail when calling Bedrock</span>
+bedrock_rt = boto3.<span class="fn">client</span>(<span class="st">"bedrock-runtime"</span>)
+response = bedrock_rt.<span class="fn">converse</span>(
+    modelId=<span class="st">"anthropic.claude-3-5-sonnet-20241022-v2:0"</span>,
+    messages=[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: [{<span class="st">"text"</span>: user_input}]}],
+    guardrailConfig={
+        <span class="st">"guardrailIdentifier"</span>: guardrail_id,
+        <span class="st">"guardrailVersion"</span>: <span class="st">"DRAFT"</span>
+    }
+)
+<span class="cm"># If denied: response["stopReason"] == "guardrail_intervened"</span></code></pre></div>
+</div></section>
+
+<!-- S13 CHEATSHEET -->
+<section class="section" id="s13">
+<div class="section-head"><div class="sec-num">13</div><div class="sec-info">
+  <span class="sec-tag" style="color:#86efac;border-color:rgba(134,239,172,.3);background:rgba(134,239,172,.08)">CHEATSHEET</span>
+  <h2>Complete Service Comparison Cheatsheet</h2>
+  <p class="sec-sub">Side-by-side equivalent services — memorize this for any cloud AI exam or quiz</p>
+</div></div>
+<div class="section-body">
+<div class="tbl-wrap"><table>
+  <tr><th>Function</th><th style="color:var(--aws)">🟠 AWS</th><th style="color:#60b0ff">🔵 Azure</th><th style="color:var(--gcp)">🟢 GCP</th></tr>
+  <tr><td><strong>Call Foundation Models</strong></td><td>Amazon Bedrock</td><td>Azure OpenAI Service</td><td>Vertex AI / Gemini API</td></tr>
+  <tr><td><strong>ML Platform</strong></td><td>Amazon SageMaker</td><td>Azure Machine Learning</td><td>Vertex AI</td></tr>
+  <tr><td><strong>Managed RAG</strong></td><td>Bedrock Knowledge Bases</td><td>Azure AI Search</td><td>Vertex AI RAG Engine</td></tr>
+  <tr><td><strong>Vector Database</strong></td><td>OpenSearch Serverless</td><td>Azure AI Search (vector)</td><td>Vertex Vector Search</td></tr>
+  <tr><td><strong>AI Agents</strong></td><td>Bedrock Agents</td><td>Azure AI Agent Service</td><td>Vertex AI Agent Builder</td></tr>
+  <tr><td><strong>Model Training</strong></td><td>SageMaker Training Jobs</td><td>Azure ML Training (command job)</td><td>Vertex AI Custom Training</td></tr>
+  <tr><td><strong>Hyperparameter Tuning</strong></td><td>SageMaker Automatic Model Tuning</td><td>Azure ML Sweep Job</td><td>Vertex AI Vizier</td></tr>
+  <tr><td><strong>Model Registry</strong></td><td>SageMaker Model Registry</td><td>Azure ML Model Registry</td><td>Vertex AI Model Registry</td></tr>
+  <tr><td><strong>ML Pipelines</strong></td><td>SageMaker Pipelines</td><td>Azure ML Pipelines (DSL)</td><td>Vertex AI Pipelines (KFP v2)</td></tr>
+  <tr><td><strong>Real-time Serving</strong></td><td>SageMaker Real-time Endpoints</td><td>Azure ML Online Endpoints</td><td>Vertex AI Dedicated Endpoints</td></tr>
+  <tr><td><strong>Batch Inference</strong></td><td>SageMaker Batch Transform</td><td>Azure ML Batch Endpoints</td><td>Vertex AI Batch Prediction</td></tr>
+  <tr><td><strong>Serverless Inference</strong></td><td>SageMaker Serverless Inference</td><td>Azure Functions</td><td>Cloud Run</td></tr>
+  <tr><td><strong>Feature Store</strong></td><td>SageMaker Feature Store</td><td>Azure ML Feature Store</td><td>Vertex AI Feature Store</td></tr>
+  <tr><td><strong>Model Monitoring</strong></td><td>SageMaker Model Monitor</td><td>Azure ML Model Monitor</td><td>Vertex AI Model Monitoring</td></tr>
+  <tr><td><strong>Explainability / SHAP</strong></td><td>SageMaker Clarify</td><td>Responsible AI Dashboard</td><td>Vertex Explainable AI</td></tr>
+  <tr><td><strong>Bias Detection</strong></td><td>SageMaker Clarify</td><td>Fairness in Responsible AI Dashboard</td><td>Vertex AI Model Evaluation</td></tr>
+  <tr><td><strong>Training Debugger</strong></td><td>SageMaker Debugger</td><td>TensorBoard on AML</td><td>Cloud TensorBoard</td></tr>
+  <tr><td><strong>Experiment Tracking</strong></td><td>SageMaker Experiments</td><td>Azure ML Experiments + runs</td><td>Vertex AI Experiments</td></tr>
+  <tr><td><strong>IDE / Notebook</strong></td><td>SageMaker Studio</td><td>Azure ML Studio</td><td>Vertex AI Workbench</td></tr>
+  <tr><td><strong>Pretrained Model Hub</strong></td><td>SageMaker JumpStart</td><td>Azure AI Foundry (model catalog)</td><td>Vertex AI Model Garden</td></tr>
+  <tr><td><strong>Image Classification</strong></td><td>Amazon Rekognition</td><td>Azure Computer Vision</td><td>Cloud Vision API</td></tr>
+  <tr><td><strong>Speech-to-Text</strong></td><td>Amazon Transcribe</td><td>Azure Speech Service (STT)</td><td>Cloud Speech-to-Text</td></tr>
+  <tr><td><strong>Text-to-Speech</strong></td><td>Amazon Polly</td><td>Azure Speech Service (TTS)</td><td>Cloud Text-to-Speech</td></tr>
+  <tr><td><strong>NLP / Text Analysis</strong></td><td>Amazon Comprehend</td><td>Azure Language Service</td><td>Cloud Natural Language</td></tr>
+  <tr><td><strong>Translation</strong></td><td>Amazon Translate</td><td>Azure Translator</td><td>Cloud Translation API</td></tr>
+  <tr><td><strong>Document OCR</strong></td><td>Amazon Textract</td><td>Azure Document Intelligence</td><td>Document AI</td></tr>
+  <tr><td><strong>Chatbot Builder</strong></td><td>Amazon Lex</td><td>Azure Bot Service</td><td>Dialogflow CX</td></tr>
+  <tr><td><strong>Recommendations</strong></td><td>Amazon Personalize</td><td>Azure Personalizer</td><td>Recommendations AI</td></tr>
+  <tr><td><strong>Time Series Forecast</strong></td><td>Amazon Forecast</td><td>Azure Anomaly Detector</td><td>Vertex AI Forecasting</td></tr>
+  <tr><td><strong>Content Safety / LLM Guard</strong></td><td>Bedrock Guardrails</td><td>Azure Content Safety + Prompt Shield</td><td>Vertex AI Safety Filters + Model Armor</td></tr>
+  <tr><td><strong>LLM Evaluation</strong></td><td>Bedrock Model Evaluation</td><td>Azure AI Evaluation SDK</td><td>Vertex AI Evaluation Service</td></tr>
+  <tr><td><strong>Observability</strong></td><td>CloudWatch + X-Ray</td><td>Application Insights + Azure Monitor</td><td>Cloud Monitoring + Cloud Trace</td></tr>
+  <tr><td><strong>MLOps OSS Tracking</strong></td><td colspan="3" style="text-align:center;color:var(--accent);font-weight:600">MLflow works identically on ALL three clouds</td></tr>
+</table></div>
+
+<div class="callout key" style="margin-top:20px"><div class="callout-icon">🏆</div><p><strong>Memory shortcut:</strong> Every cloud has the same 6 pillars — (1) LLM API · (2) ML Platform · (3) Vector Search / RAG · (4) AI Agents · (5) Pre-built AI APIs · (6) Safety &amp; Guardrails. Know the service name for each pillar on each cloud and you'll ace any Cloud AI question.</p></div>
+
+<div class="mini-t">Speed Reference — Unique Differentiators</div>
+<div class="cloud-grid">
+  <div class="cloud-card aws"><div class="cc-header"><span>🟠</span><span class="cc-logo aws">AWS Unique Strengths</span></div>
+    <div class="cc-body"><ul><li><strong>Multi-vendor LLMs</strong> via single Converse API — switch Claude→Llama by changing modelId</li><li><strong>Bedrock Agents</strong> — most mature serverless agent builder</li><li><strong>Spot instance</strong> + SageMaker Managed Spot Training</li><li><strong>SageMaker Debugger</strong> — unique auto-detect training issues</li><li><strong>Bedrock Guardrails</strong> — most comprehensive LLM safety</li></ul></div></div>
+  <div class="cloud-card azure"><div class="cc-header"><span>🔵</span><span class="cc-logo azure">Azure Unique Strengths</span></div>
+    <div class="cc-body"><ul><li><strong>Enterprise OpenAI</strong> — GPT-4o with Azure SLA + VNET</li><li><strong>Semantic Ranker</strong> in AI Search — production reranking</li><li><strong>Prompt Shield</strong> — jailbreak detection unique to Azure</li><li><strong>Responsible AI Dashboard</strong> — error analysis + fairness + SHAP</li><li><strong>Microsoft 365 integration</strong> — Copilot + Teams + Office AI</li></ul></div></div>
+  <div class="cloud-card gcp"><div class="cc-header"><span>🟢</span><span class="cc-logo gcp">GCP Unique Strengths</span></div>
+    <div class="cc-body"><ul><li><strong>1M token context</strong> (Gemini 1.5 Pro) — feed entire codebases</li><li><strong>Google Search grounding</strong> — cite live web, no hallucinations on current events</li><li><strong>Native multimodal</strong> — text/image/video/audio in one model</li><li><strong>TPU v5</strong> — fastest custom AI hardware on any cloud</li><li><strong>BigQuery ML</strong> — run ML models directly in SQL</li></ul></div></div>
+</div>
+</div></section>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+function showTab(btn,panelId){
+  var tabs=btn.closest('.tabs');
+  tabs.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  tabs.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+var sections=document.querySelectorAll('section[id]');
+var navLinks=document.querySelectorAll('.nav-link');
+var observer=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      navLinks.forEach(function(n){n.classList.remove('active')});
+      var a=document.querySelector('.nav-link[href="#'+e.target.id+'"]');
+      if(a)a.classList.add('active');
+    }
+  });
+},{threshold:0.2});
+sections.forEach(function(s){observer.observe(s)});
+</script>
+</body>
+</html>
